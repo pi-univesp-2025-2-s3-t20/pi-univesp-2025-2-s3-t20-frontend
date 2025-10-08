@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('img/fotos_salgados.jpg') no-repeat center center fixed;
+      background-size: cover;
+      opacity: 0.3;
+      z-index: -1;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      text-align: center;
+      margin: auto;
+      position: relative;
+      top: 15%;
+    }
+
+    .login-container h1 {
+      margin-bottom: 20px;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .login-container button:hover {
+      background-color: #0056b3;
+    }
+
+    .forgot-password {
+      display: block;
+      margin-top: 10px;
+      color: #007bff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .forgot-password:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 14px;
+      color: #333;
+      background-color: rgba(255, 255, 255, 0); /* fundo transparente */
+      border-top: none; /* remove a linha superior */
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Login</h1>
+    <form id="form-login">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <a href="#" class="forgot-password" id="forgot-password">Esqueceu a senha?</a>
+  </div>
+
+  <footer>
+    Desenvolvido por Áuria, Gabriella, Lincoln, Marcio, Priscila, Richard, Rodner e Thais
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const isAuthenticated = localStorage.getItem('auth') === 'true';
+      if (isAuthenticated) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    // Login
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const dados = {
+        email: 'admin@empresa.com',
+        senha: 'senha1234'
+      };
+
+      try {
+        const resposta = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        });
+
+        if (resposta.ok) {
+          localStorage.setItem('auth', 'true');
+          alert('Login realizado com sucesso!');
+          window.location.href = 'index.html';
+        } else {
+          alert('Credenciais inválidas ou servidor recusou o login.');
+        }
+      } catch (erro) {
+        console.error('Erro ao conectar com o servidor:', erro);
+        alert('Erro ao conectar com o servidor. Verifique se a API está ativa.');
+      }
+    });
+
+    // Esqueceu a senha
+    document.getElementById('forgot-password').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = prompt('Informe o seu e-mail cadastrado para recuperação de senha:');
+      if (!email) return;
+
+      try {
+        const resposta = await fetch('http://localhost:3000/recuperar-senha', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        if (resposta.ok) {
+          alert('Um link de recuperação foi enviado para o seu e-mail.');
+        } else {
+          alert('E-mail não encontrado ou erro ao enviar o link.');
+        }
+      } catch (erro) {
+        console.error('Erro ao enviar o link de recuperação:', erro);
+        alert('Erro ao conectar com o servidor. Verifique se a API está ativa.');
+      }
+    });
+  </script>
+</body>
+</html>
+
+
