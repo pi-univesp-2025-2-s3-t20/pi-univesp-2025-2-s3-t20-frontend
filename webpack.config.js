@@ -5,7 +5,7 @@ const Dotenv = require('dotenv-webpack');
 
 // Nomes dos arquivos HTML que você tem na pasta src
 const htmlFiles = [
-  'index', 'login', 'cadastrar_produtos', 'estoque', 
+  'index', 'login', 'cadastro_pedido', 'estoque', 
   'financeiro', 'pedidos', 'relatorios'
 ];
 
