@@ -53,6 +53,24 @@
       font-size: 16px;
       margin: 8px 0;
     }
+
+    .loader {
+      border: 8px solid #f3f3f3; /* Light grey */
+      border-top: 8px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 50px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -63,24 +81,53 @@
     </div>
 
     <h1>Relatórios de Vendas</h1>
-    <ul id="relatorios">
-      <li>Carregando relatórios...</li>
+    <div id="loader" class="loader"></div>
+    <ul id="relatorios" class="hidden">
+      <!-- Conteúdo será preenchido via JS -->
     </ul>
   </div>
 
   <script>
-    async function carregarRelatorios() {
-      try {
-        const resposta = await fetch(`${API_BASE_URL}/relatorios`);
-        const relatorios = await resposta.json();
-        document.getElementById('relatorios').innerHTML =
-          relatorios.map(r => `<li>${r.mes}: R$ ${r.total_vendas}</li>`).join('');
-      } catch (erro) {
-        alert('Erro ao carregar relatórios.');
-      }
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      async function carregarRelatorios() {
+        const loader = document.getElementById('loader');
+        const relatoriosList = document.getElementById('relatorios');
 
-    carregarRelatorios();
+        try {
+          const token = localStorage.getItem('accessToken');
+          if (!token) {
+            throw new Error('Token de autenticação não encontrado.');
+          }
+
+          const resposta = await fetch(`${API_BASE_URL}/vendas/resumo`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (!resposta.ok) {
+            if (resposta.status === 401) {
+              localStorage.clear();
+              window.location.href = 'login.html';
+            }
+            throw new Error(`Erro HTTP: ${resposta.status}`);
+          }
+
+          const relatorios = await resposta.json();
+          relatoriosList.innerHTML = `
+            <li><strong>Receita Total Geral:</strong> R$ ${relatorios.receitaTotal.toFixed(2)}</li>
+            <li><strong>Número Total de Vendas:</strong> ${relatorios.totalVendas}</li>
+          `;
+        } catch (erro) {
+          console.error('Falha ao carregar relatórios:', erro);
+          alert('Erro ao carregar relatórios.');
+        } finally {
+          loader.classList.add('hidden');
+          relatoriosList.classList.remove('hidden');
+        }
+      }
+      carregarRelatorios();
+    });
 
     // Botão Voltar
     document.getElementById('btn-voltar').addEventListener('click', () => {
@@ -89,7 +136,7 @@
 
     // Botão Sair
     document.getElementById('btn-sair').addEventListener('click', () => {
-      localStorage.removeItem('auth');
+      localStorage.clear();
       alert('Você saiu do sistema.');
       window.location.href = 'login.html';
     });

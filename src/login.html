@@ -132,8 +132,10 @@
         });
 
         if (resposta.ok) {
-          localStorage.setItem('auth', 'true');
-          alert('Login realizado com sucesso!');
+          const data = await resposta.json(); // Extrai o corpo da resposta como JSON
+          // Salva o token de acesso no localStorage
+          localStorage.setItem('accessToken', data.accessToken);
+          localStorage.setItem('auth', 'true'); // Mantém a verificação de autenticação
           window.location.href = 'index.html';
         } else {
           alert('Credenciais inválidas ou servidor recusou o login.');
@@ -145,28 +147,7 @@
     });
 
     // Esqueceu a senha
-    document.getElementById('forgot-password').addEventListener('click', async (e) => {
-      e.preventDefault();
-      const email = prompt('Informe o seu e-mail cadastrado para recuperação de senha:');
-      if (!email) return;
-
-      try {
-        const resposta = await fetch(`${API_BASE_URL}/recuperar-senha`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-
-        if (resposta.ok) {
-          alert('Um link de recuperação foi enviado para o seu e-mail.');
-        } else {
-          alert('E-mail não encontrado ou erro ao enviar o link.');
-        }
-      } catch (erro) {
-        console.error('Erro ao enviar o link de recuperação:', erro);
-        alert('Erro ao conectar com o servidor. Verifique se a API está ativa.');
-      }
-    });
+    document.getElementById('forgot-password').style.display = 'none'; // Esconde o link pois a API não suporta
   </script>
 </body>
 </html>
