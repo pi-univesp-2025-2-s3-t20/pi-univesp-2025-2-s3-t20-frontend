@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Pedidos</title>
+  <!-- DataTables CSS e Extensão Responsive -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.dataTables.min.css">
+
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%;
@@ -49,9 +53,46 @@
       background-color: #5a6268; /* cinza mais escuro no hover */
     }
 
-    #lista-pedidos li {
-      font-size: 16px;
-      margin: 8px 0;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .loader {
+      border: 8px solid #f3f3f3; /* Light grey */
+      border-top: 8px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 50px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
@@ -63,24 +104,93 @@
     </div>
 
     <h1>Pedidos Realizados</h1>
-    <ul id="lista-pedidos">
-      <li>Carregando pedidos...</li>
-    </ul>
+    <div id="loader" class="loader"></div>
+    <table id="tabela-pedidos" class="display hidden" style="width:100%">
+      <thead>
+        <tr>
+          <th>ID Venda</th>
+          <th>Data</th>
+          <th>Cliente</th>
+          <th>Produto</th>
+          <th>Qtd.</th>
+          <th>Valor Total</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-pedidos-corpo">
+        <!-- O conteúdo será preenchido via JavaScript -->
+      </tbody>
+    </table>
   </div>
+
+  <!-- jQuery (dependência do DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- DataTables JS e Extensão Responsive -->
+  <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.min.js"></script>
 
   <script>
     async function carregarPedidos() {
+      const loader = document.getElementById('loader');
+      const tabela = document.getElementById('tabela-pedidos');
+
       try {
-        const resposta = await fetch(`${API_BASE_URL}/pedidos`);
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          throw new Error('Token de autenticação não encontrado.');
+        }
+
+        const resposta = await fetch(`${API_BASE_URL}/vendas`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!resposta.ok) {
+          if (resposta.status === 401) {
+            localStorage.clear(); // Limpa token inválido
+            window.location.href = 'login.html';
+          }
+          throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
         const pedidos = await resposta.json();
-        document.getElementById('lista-pedidos').innerHTML =
-          pedidos.map(p => `<li>#${p.id} - ${p.cliente} - R$ ${p.total}</li>`).join('');
+        const corpoTabela = document.getElementById('tabela-pedidos-corpo');
+
+        if (pedidos.length === 0) {
+          corpoTabela.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhuma venda encontrada.</td></tr>';
+        } else {
+          corpoTabela.innerHTML = pedidos.map(venda => `
+            <tr>
+              <td>${venda.idVenda}</td>
+              <td>${new Date(venda.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+              <td>${venda.cliente.nomeCliente}</td>
+              <td>${venda.produto.produto}</td>
+              <td>${venda.quantidade}</td>
+              <td>R$ ${venda.receitaTotal.toFixed(2)}</td>
+            </tr>
+          `).join('');
+        }
+
+        // Inicializa o DataTables após a tabela ser preenchida
+        new DataTable('#tabela-pedidos', {
+          responsive: true,
+          language: {
+            url: '//cdn.datatables.net/plug-ins/2.0.8/i18n/pt-BR.json',
+          }
+        });
+
       } catch (erro) {
+        console.error('Falha ao carregar pedidos:', erro);
         alert('Erro ao carregar pedidos.');
+      } finally {
+        loader.classList.add('hidden');
+        tabela.classList.remove('hidden');
       }
     }
 
-    carregarPedidos();
+    // Garante que a página e os scripts (incluindo o do Webpack) foram carregados
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarPedidos();
+    });
 
     // Botão Voltar
     document.getElementById('btn-voltar').addEventListener('click', () => {
@@ -89,7 +199,7 @@
 
     // Botão Sair
     document.getElementById('btn-sair').addEventListener('click', () => {
-      localStorage.removeItem('auth');
+      localStorage.clear();
       alert('Você saiu do sistema.');
       window.location.href = 'login.html';
     });
