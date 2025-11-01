@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Relatórios</title>
+  <title>Pedidos</title>
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%;
@@ -46,10 +46,10 @@
     }
 
     .botoes-topo button:hover {
-      background-color: #5a6268; /* cinza escuro no hover */
+      background-color: #5a6268; /* cinza mais escuro no hover */
     }
 
-    #relatorios li {
+    #lista-pedidos li {
       font-size: 16px;
       margin: 8px 0;
     }
@@ -62,25 +62,25 @@
       <button id="btn-sair">Sair</button>
     </div>
 
-    <h1>Relatórios de Vendas</h1>
-    <ul id="relatorios">
-      <li>Carregando relatórios...</li>
+    <h1>Pedidos Realizados</h1>
+    <ul id="lista-pedidos">
+      <li>Carregando pedidos...</li>
     </ul>
   </div>
 
   <script>
-    async function carregarRelatorios() {
+    async function carregarPedidos() {
       try {
-        const resposta = await fetch('http://localhost:3000/relatorios');
-        const relatorios = await resposta.json();
-        document.getElementById('relatorios').innerHTML =
-          relatorios.map(r => `<li>${r.mes}: R$ ${r.total_vendas}</li>`).join('');
+        const resposta = await fetch(`${API_BASE_URL}/pedidos`);
+        const pedidos = await resposta.json();
+        document.getElementById('lista-pedidos').innerHTML =
+          pedidos.map(p => `<li>#${p.id} - ${p.cliente} - R$ ${p.total}</li>`).join('');
       } catch (erro) {
-        alert('Erro ao carregar relatórios.');
+        alert('Erro ao carregar pedidos.');
       }
     }
 
-    carregarRelatorios();
+    carregarPedidos();
 
     // Botão Voltar
     document.getElementById('btn-voltar').addEventListener('click', () => {
@@ -96,14 +96,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-

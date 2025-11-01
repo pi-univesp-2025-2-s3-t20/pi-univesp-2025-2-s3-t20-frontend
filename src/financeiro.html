@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Pedidos</title>
+  <title>Financeiro</title>
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%;
@@ -46,12 +46,16 @@
     }
 
     .botoes-topo button:hover {
-      background-color: #5a6268; /* cinza mais escuro no hover */
+      background-color: #5a6268; /* cinza escuro no hover */
     }
 
-    #lista-pedidos li {
+    #resumo p {
       font-size: 16px;
-      margin: 8px 0;
+      margin: 10px 0;
+    }
+
+    #resumo strong {
+      color: #333;
     }
   </style>
 </head>
@@ -62,25 +66,28 @@
       <button id="btn-sair">Sair</button>
     </div>
 
-    <h1>Pedidos Realizados</h1>
-    <ul id="lista-pedidos">
-      <li>Carregando pedidos...</li>
-    </ul>
+    <h1>Resumo Financeiro</h1>
+    <div id="resumo">
+      <p>Carregando dados financeiros...</p>
+    </div>
   </div>
 
   <script>
-    async function carregarPedidos() {
+    async function carregarFinanceiro() {
       try {
-        const resposta = await fetch('http://localhost:3000/pedidos');
-        const pedidos = await resposta.json();
-        document.getElementById('lista-pedidos').innerHTML =
-          pedidos.map(p => `<li>#${p.id} - ${p.cliente} - R$ ${p.total}</li>`).join('');
+        const resposta = await fetch(`${API_BASE_URL}/financeiro`);
+        const dados = await resposta.json();
+        document.getElementById('resumo').innerHTML = `
+          <p><strong>Receita:</strong> R$ ${dados.receita}</p>
+          <p><strong>Despesas:</strong> R$ ${dados.despesas}</p>
+          <p><strong>Lucro:</strong> R$ ${dados.lucro}</p>
+        `;
       } catch (erro) {
-        alert('Erro ao carregar pedidos.');
+        alert('Erro ao carregar financeiro.');
       }
     }
 
-    carregarPedidos();
+    carregarFinanceiro();
 
     // Botão Voltar
     document.getElementById('btn-voltar').addEventListener('click', () => {
@@ -96,16 +103,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
