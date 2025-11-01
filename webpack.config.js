@@ -15,7 +15,7 @@ module.exports = {
 
   // Pontos de entrada: Webpack começará a empacotar a partir daqui
   entry: {
-    main: './src/script.js', // Ponto de entrada principal
+    main: path.resolve(__dirname, 'src', 'script.js'), // Ponto de entrada principal com caminho absoluto
   },
 
   // Configuração do servidor de desenvolvimento
@@ -44,7 +44,7 @@ module.exports = {
     // Gera os arquivos HTML na pasta 'dist' automaticamente
     ...htmlFiles.map(file => 
       new HtmlWebpackPlugin({
-        template: `./src/${file}.html`, // Arquivo de origem
+        template: path.resolve(__dirname, 'src', `${file}.html`), // Usando caminho absoluto para o template
         filename: `${file}.html`,      // Arquivo de destino
         chunks: ['main'],              // Injeta o bundle 'main.bundle.js' em todos os HTMLs
       })
