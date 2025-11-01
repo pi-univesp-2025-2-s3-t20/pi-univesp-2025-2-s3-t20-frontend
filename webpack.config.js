@@ -37,8 +37,10 @@ module.exports = {
   plugins: [
     // Plugin para carregar as variáveis de ambiente
     new Dotenv({
-      // Carrega .env.production se mode for 'production', senão carrega .env
-      path: `./.env${process.env.NODE_ENV === 'production' ? '.production' : ''}`
+      // Carrega o arquivo .env apropriado para o ambiente local
+      path: `./.env${process.env.NODE_ENV === 'production' ? '.production' : ''}`,
+      // Permite que variáveis de ambiente do sistema (como as do Netlify) sobrescrevam as dos arquivos .env
+      systemvars: true
     }),
 
     // Gera os arquivos HTML na pasta 'dist' automaticamente
