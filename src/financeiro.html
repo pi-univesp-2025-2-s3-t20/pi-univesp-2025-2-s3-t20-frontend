@@ -28,38 +28,63 @@
       width: 80%;
       border-radius: 10px;
     }
+
+    .botoes-topo {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .botoes-topo a {
+      text-decoration: none;
+      padding: 10px 20px;
+      background-color: #6c757d;
+      color: white;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .botoes-topo a:hover {
+      background-color: #5a6268;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .loader-overlay .loader {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 60px; height: 60px;
+      animation: spin 1.5s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <div class="container">
+    <div class="botoes-topo">
+      <a href="index.html">Voltar</a>
+    </div>
     <h1>Resumo Financeiro</h1>
     <div id="resumo"></div>
   </div>
 
-  <script>
-    async function carregarFinanceiro() {
-      try {
-        const resposta = await fetch('http://localhost:3000/financeiro');
-        const dados = await resposta.json();
-        document.getElementById('resumo').innerHTML = `
-          <p>Receita: R$ ${dados.receita}</p>
-          <p>Despesas: R$ ${dados.despesas}</p>
-          <p>Lucro: R$ ${dados.lucro}</p>
-        `;
-      } catch (erro) {
-        alert('Erro ao carregar financeiro.');
-      }
-    }
-
-    carregarFinanceiro();
-  </script>
+  <div id="loader-overlay" class="loader-overlay">
+    <div class="loader"></div>
+  </div>
 </body>
 </html>
-
-
-
-
-
-
-
-

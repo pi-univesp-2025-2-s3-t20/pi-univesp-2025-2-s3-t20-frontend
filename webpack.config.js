@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
@@ -45,10 +46,46 @@ module.exports = (env, argv) => {
         filename: 'login.html',
         chunks: ['main'],
       }),
+      // Gera o cadastro_pedido.html com o script injetado
+      new HtmlWebpackPlugin({
+        template: './src/cadastro_pedido.html', // Seu template de cadastro
+        filename: 'cadastro_pedido.html',
+        chunks: ['main'],
+      }),
+      // Gera o pedidos.html com o script injetado
+      new HtmlWebpackPlugin({
+        template: './src/pedidos.html',
+        filename: 'pedidos.html',
+        chunks: ['main'],
+      }),
+      // Gera o estoque.html com o script injetado
+      new HtmlWebpackPlugin({
+        template: './src/estoque.html',
+        filename: 'estoque.html',
+        chunks: ['main'],
+      }),
+      // Gera o financeiro.html com o script injetado
+      new HtmlWebpackPlugin({
+        template: './src/financeiro.html',
+        filename: 'financeiro.html',
+        chunks: ['main'],
+      }),
+      // Gera o relatorios.html com o script injetado
+      new HtmlWebpackPlugin({
+        template: './src/relatorios.html',
+        filename: 'relatorios.html',
+        chunks: ['main'],
+      }),
       // Carrega as variáveis de ambiente
       new Dotenv({
         path: envPath, // Caminho para o arquivo .env
         systemvars: true, // Permite que variáveis de ambiente do sistema sobrescrevam as do .env
+      }),
+      // Copia arquivos estáticos (como imagens) da pasta src para a dist
+      new CopyPlugin({
+        patterns: [
+          { from: 'src/img', to: 'img' },
+        ],
       }),
     ],
     mode: isProduction ? 'production' : 'development',

@@ -117,48 +117,20 @@
     <div class="form-box">
       <h2>Cadastro de Produto</h2>
       <form id="form-produto">
-        <input type="text" name="nome" placeholder="Nome do produto (ex: Coxinha)" required>
-        <input type="text" name="peso" placeholder="Peso (ex: 120g)" required>
-        <input type="number" name="quantidade" placeholder="Quantidade" required>
-        <input type="number" step="0.01" name="valor" placeholder="Valor (R$)" required>
-        <textarea name="descricao" rows="4" placeholder="Descrição dos ingredientes" required></textarea>
+        <input type="text" name="produto" placeholder="Nome do produto (ex: Coxinha)" required>
+        <input type="text" name="categoria" placeholder="Categoria (ex: Salgado)" required>
+        <input type="number" step="0.01" name="custoUnitario" placeholder="Custo Unitário (R$)" required>
+        <input type="number" step="0.01" name="precoSugerido" placeholder="Preço Sugerido (R$)">
+        <input type="number" name="pedidoMinimo" placeholder="Pedido Mínimo (unidades)">
+        <input type="number" step="0.01" name="centoPreco" placeholder="Preço do Cento (R$)">
         <div class="form-actions">
           <button type="submit" class="save">Salvar Produto</button>
-          <button type="reset" class="delete">Excluir Produto</button>
         </div>
       </form>
       <div class="actions">
         <a href="index.html">Voltar</a>
-        <a href="login.html">Sair</a>
       </div>
     </div>
   </div>
-
-  <script>
-    document.getElementById('form-produto').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const produto = Object.fromEntries(formData.entries());
-
-      try {
-        const resposta = await fetch('http://localhost:3000/produtos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(produto)
-        });
-
-        if (resposta.ok) {
-          alert('Produto cadastrado com sucesso!');
-          e.target.reset();
-        } else {
-          alert('Erro ao salvar produto. Verifique os dados ou o servidor.');
-        }
-      } catch (erro) {
-        console.error('Erro ao conectar com o servidor:', erro);
-        alert('Erro ao conectar com o servidor.');
-      }
-    });
-  </script>
 </body>
 </html>
-
