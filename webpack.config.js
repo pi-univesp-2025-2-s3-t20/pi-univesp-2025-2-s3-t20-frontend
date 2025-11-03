@@ -6,8 +6,6 @@ const CopyPlugin = require('copy-webpack-plugin');
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
 
-  const envPath = isProduction ? null : path.resolve(__dirname, '.env.production');
-
   return {
     entry: {
       main: './src/script.js',
@@ -34,11 +32,10 @@ module.exports = (env, argv) => {
         chunks: ['main'],
       }),
       new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, 'src', 'login.html'), // Seu template de login
+        template: path.resolve(__dirname, 'src', 'login.html'),
         filename: 'login.html',
         chunks: ['main'],
       }),
-      // Gera o cadastro_pedido.html com o script injetado
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'cadastro_pedido.html'),
         filename: 'cadastro_pedido.html',
@@ -65,7 +62,7 @@ module.exports = (env, argv) => {
         chunks: ['main'],
       }),
       new Dotenv({
-        path: envPath,
+        path: path.resolve(__dirname, '.env.production'),
         systemvars: true,
       }),
       new CopyPlugin({
