@@ -5,33 +5,37 @@ document.addEventListener('DOMContentLoaded', () => {
   const isAuthenticated = !!localStorage.getItem('authToken');
   const path = window.location.pathname;
 
-  if (!isAuthenticated && !path.endsWith('/login.html')) {
+  const isLoginPage = path.includes('/login');
+
+  // Se não estiver autenticado e não estiver na página de login, redireciona para o login.
+  if (!isAuthenticated && !isLoginPage) {
     window.location.href = 'login.html';
     return;
   }
 
-  if (isAuthenticated && path.endsWith('/login.html')) {
+  // Se estiver autenticado e tentar acessar a página de login, redireciona para o index.
+  if (isAuthenticated && isLoginPage) { 
     window.location.href = 'index.html';
     return;
   }
 
-  if (path.endsWith('/login.html')) {
+  if (isLoginPage) {
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
       formLogin.addEventListener('submit', handleLogin);
     }
-  } else if (path.endsWith('/cadastro_pedido.html')) {
+  } else if (path.includes('/cadastro_pedido')) {
     const formProduto = document.getElementById('form-produto');
     if (formProduto) {
       formProduto.addEventListener('submit', handleCadastroProduto);
     }
-  } else if (path.endsWith('/pedidos.html')) {
+  } else if (path.includes('/pedidos')) {
     carregarVendas();
-  } else if (path.endsWith('/estoque.html')) {
+  } else if (path.includes('/estoque')) {
     carregarEstoque();
-  } else if (path.endsWith('/financeiro.html')) {
+  } else if (path.includes('/financeiro')) {
     carregarFinanceiro();
-  } else if (path.endsWith('/relatorios.html')) {
+  } else if (path.includes('/relatorios')) {
     carregarRelatorios();
   }
 
@@ -71,7 +75,6 @@ async function handleLogin(e) {
 
       if (token) {
         localStorage.setItem('authToken', token);
-        alert('Login realizado com sucesso!');
         window.location.href = 'index.html';
       } else {
         alert('Login bem-sucedido, mas o token de autenticação não foi recebido.');

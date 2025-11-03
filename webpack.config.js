@@ -15,6 +15,10 @@ module.exports = (env, argv) => {
       filename: '[name].[contenthash].js',
       clean: true,
     },
+    cache: false, // Desabilita o cache para forçar a releitura dos arquivos
+    optimization: {
+      minimize: false,
+    },
     devServer: {
       static: './dist',
       open: true,
