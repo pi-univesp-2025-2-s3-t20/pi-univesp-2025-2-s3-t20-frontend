@@ -1,0 +1,23 @@
+{
+  "name": "pi-univesp-2025-2-s3-t20-frontend",
+  "version": "1.0.0",
+  "description": "Projeto PI Front-end — Gestão e Controle de Estoque\r Aplicação web desenvolvida em HTML, CSS e JavaScript puro, com integração a uma API backend para controle de produtos, pedidos, estoque, financeiro e relatórios.",
+  "main": "webpack.config.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=development webpack serve --mode development",
+    "build": "cross-env NODE_ENV=production webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+  ,
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv-webpack": "^8.0.1",
+    "html-webpack-plugin": "^5.5.3",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}

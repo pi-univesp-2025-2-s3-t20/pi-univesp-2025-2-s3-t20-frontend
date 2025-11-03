@@ -1,3 +1,6 @@
+// Exemplo de como acessar a variável de ambiente
+console.log('API Base URL:', process.env.BASE_URL);
+
 // Verifica se o usuário está autenticado
 document.addEventListener('DOMContentLoaded', () => {
   const isAuthenticated = localStorage.getItem('auth') === 'true';

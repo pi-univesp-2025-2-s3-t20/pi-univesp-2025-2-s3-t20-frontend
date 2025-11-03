@@ -74,48 +74,5 @@
       <button type="submit">Entrar</button>
     </form>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const isAuthenticated = localStorage.getItem('auth') === 'true';
-      if (isAuthenticated) {
-        window.location.href = 'index.html';
-      }
-    });
-
-    document.getElementById('form-login').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const dados = {
-        email: 'admin@empresa.com',
-        senha: 'senha1234'
-      };
-
-      try {
-        const resposta = await fetch('http://localhost:3000/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dados)
-        });
-
-        if (resposta.ok) {
-          localStorage.setItem('auth', 'true');
-          alert('Login realizado com sucesso!');
-          window.location.href = 'index.html';
-        } else {
-          alert('Credenciais inválidas ou servidor recusou o login.');
-        }
-      } catch (erro) {
-        console.error('Erro ao conectar com o servidor:', erro);
-        alert('Erro ao conectar com o servidor. Verifique se a API está ativa.');
-      }
-    });
-  </script>
 </body>
 </html>
-
-
-
-
-
-

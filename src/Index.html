@@ -23,7 +23,7 @@
       height: 100%;
       background: url('img/fotos_salgados.jpg') no-repeat center center fixed;
       background-size: cover;
-      opacity: 0.3; /* ajuste conforme desejar */
+      opacity: 0.3;
       z-index: -1;
     }
 
@@ -42,20 +42,24 @@
       padding: 40px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
     }
 
-    .nav-buttons a {
+    .nav-buttons a,
+    .nav-buttons button {
       text-decoration: none;
       padding: 12px 20px;
       background-color: #007bff;
       color: white;
       border-radius: 5px;
-      text-align: center;
       font-size: 16px;
       transition: background-color 0.3s ease;
+      border: none;
+      cursor: pointer;
     }
 
-    .nav-buttons a:hover {
+    .nav-buttons a:hover,
+    .nav-buttons button:hover {
       background-color: #0056b3;
     }
   </style>
@@ -63,16 +67,13 @@
 <body>
   <div class="container">
     <div class="nav-buttons">
-      <a href="cadastrar_produtos.html">Cadastrar Produtos</a>
+      <a href="cadastro_pedido.html">Cadastrar Produtos</a>
       <a href="pedidos.html">Pedidos</a>
       <a href="estoque.html">Estoque</a>
       <a href="financeiro.html">Financeiro</a>
       <a href="relatorios.html">Relatórios</a>
-      <a href="login.html">Sair</a>
+      <button id="btn-logout">Sair</button>
     </div>
   </div>
 </body>
 </html>
-
-
-
