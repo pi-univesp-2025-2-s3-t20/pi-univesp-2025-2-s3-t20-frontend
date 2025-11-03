@@ -6,6 +6,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve --mode development",
     "build": "cross-env NODE_ENV=production webpack --mode production",
+    "build:local": "cross-env BASE_URL=https://protestant-amberly-univesp-pi-2025-s2-832c3de0.koyeb.app npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -20,5 +21,9 @@
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
+  },
+  "dependencies": {
+    "datatables.net": "^2.0.8",
+    "jquery": "^3.7.1"
   }
 }

@@ -75,5 +75,24 @@
       <button id="btn-logout">Sair</button>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const isAuthenticated = !!localStorage.getItem('authToken');
+
+      if (!isAuthenticated) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const btnLogout = document.getElementById('btn-logout');
+      if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+          localStorage.removeItem('authToken');
+          window.location.href = 'login.html';
+        });
+      }
+    });
+  </script>
 </body>
 </html>
