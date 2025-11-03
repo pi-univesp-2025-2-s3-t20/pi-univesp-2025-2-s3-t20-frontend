@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plataforma - Gestão e Controle de Estoque</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('img/fotos_salgados.jpg') no-repeat center center fixed;
+      background-size: cover;
+      opacity: 0.3; /* ajuste conforme desejar */
+      z-index: -1;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+
+    .nav-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-buttons a {
+      text-decoration: none;
+      padding: 12px 20px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-buttons a:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-buttons">
+      <a href="cadastrar_produtos.html">Cadastrar Produtos</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="financeiro.html">Financeiro</a>
+      <a href="relatorios.html">Relatórios</a>
+      <a href="login.html">Sair</a>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
