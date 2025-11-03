@@ -1,42 +1,53 @@
 Projeto PI Front-end — Gestão e Controle de Estoque
 Aplicação web desenvolvida em HTML, CSS e JavaScript puro, com integração a uma API backend para controle de produtos, pedidos, estoque, financeiro e relatórios.
 
-🖼️ Visual
-Todas as páginas utilizam uma imagem de fundo transparente:
-
-
-🔐 Autenticação
-• 	Tela de login com verificação via 
-• 	Redirecionamento automático para  após login
-• 	Botão de logout disponível em todas as páginas principais
+ Autenticação
+• 	Tela de login com verificação via API.
 
 🔗 Integração com Backend
-O frontend foi atualizado para consumir dados reais via , substituindo os dados mockados.
+O frontend consome dados de uma API REST para todas as operações. A URL da API é configurada via variáveis de ambiente.
 
+---
 
-🛠️ Como rodar no VS Code
-1. 	Clone o projeto
+🛠️ Como Executar o Projeto
 
-2. 	Abra no VS Code
+1.  **Clone o repositório:**
+    ```bash
+    git clone <URL_DO_REPOSITORIO>
+    cd pi-univesp-2025-2-s3-t20-frontend
+    ```
 
-3. 	Instale e rode o backend
-Certifique-se de que o backend está rodando em .
-Exemplo com Node.js:
+2.  **Instale as dependências:**
+    É necessário ter o [Node.js](https://nodejs.org/) instalado.
+    ```bash
+    npm install
+    ```
 
-4. 	Abra o  com Live Server
-• 	Clique com o botão direito no 
-• 	Selecione "Open with Live Server"
+3.  **Configure as variáveis de ambiente:**
+    - Renomeie o arquivo `.env.example` para `.env`.
+    - Altere o valor de `BASE_URL` para o endereço da sua API backend (ex: `http://localhost:3000`).
 
-📁 Estrutura de Pastas
+4.  **Execute em modo de desenvolvimento:**
+    Este comando iniciará um servidor de desenvolvimento (geralmente em `http://localhost:8080`) com recarregamento automático.
+    ```bash
+    npm start
+    ```
 
+5.  **Compile para produção:**
+    Este comando gera os arquivos otimizados para produção na pasta `dist/`.
+    ```bash
+    npm run build
+    ```
+
+---
 
 📚 Tecnologias
 • 	HTML5
 • 	CSS3
 • 	JavaScript (ES6)
 • 	Fetch API
-• 	Backend REST (Node.js + Express)
-• 	Live Server (VS Code Extension)
+• 	Webpack
+• 	DataTables.net
 
 📞 **SUPORTE**  
 Para dúvidas ou melhorias, entre em contato com o desenvolvedores responsáveis.
