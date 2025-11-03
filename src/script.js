@@ -1,4 +1,3 @@
-// Exemplo de como acessar a variável de ambiente
 const API_BASE_URL = process.env.BASE_URL;
 console.log('API Base URL:', API_BASE_URL);
 
@@ -6,19 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const isAuthenticated = !!localStorage.getItem('authToken');
   const path = window.location.pathname;
 
-  // Se não estiver autenticado e não estiver na página de login, redireciona
   if (!isAuthenticated && !path.endsWith('/login.html')) {
     window.location.href = 'login.html';
     return;
   }
 
-  // Se já estiver autenticado e na página de login, redireciona para a home
   if (isAuthenticated && path.endsWith('/login.html')) {
     window.location.href = 'index.html';
     return;
   }
 
-  // Adiciona listeners de evento com base na página atual
   if (path.endsWith('/login.html')) {
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
@@ -30,20 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
       formProduto.addEventListener('submit', handleCadastroProduto);
     }
   } else if (path.endsWith('/pedidos.html')) {
-    // Carrega as vendas na página de pedidos
     carregarVendas();
   } else if (path.endsWith('/estoque.html')) {
-    // Carrega os produtos na página de estoque
     carregarEstoque();
   } else if (path.endsWith('/financeiro.html')) {
-    // Carrega o resumo financeiro
     carregarFinanceiro();
   } else if (path.endsWith('/relatorios.html')) {
-    // Carrega os relatórios de vendas
     carregarRelatorios();
   }
 
-  // Configura o botão de logout em qualquer página (exceto login)
   if (isAuthenticated) {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
@@ -75,13 +66,10 @@ async function handleLogin(e) {
     });
 
     if (resposta.ok) {
-      // 1. Captura o token da resposta do login
       const data = await resposta.json();
-      // A API pode retornar 'token' ou 'accessToken'. Vamos verificar ambos.
       const token = data.token || data.accessToken;
 
       if (token) {
-        // 2. Armazena o token no localStorage
         localStorage.setItem('authToken', token);
         alert('Login realizado com sucesso!');
         window.location.href = 'index.html';
@@ -127,7 +115,7 @@ async function carregarVendas() {
   if (!tabelaPedidos.length || !loader.length) { if(loader.length) loader.addClass('hidden'); return; }
 
   try {
-    const resposta = await apiFetch('/vendas'); // Usando a nova função com autenticação
+    const resposta = await apiFetch('/vendas');
     if (!resposta.ok) {
       throw new Error('Falha ao carregar vendas');
     }
@@ -145,7 +133,7 @@ async function carregarVendas() {
         { data: 'formaPagamento.formaPagamento' },
         { data: 'receitaTotal', render: (data) => data.toFixed(2) }
       ],
-      destroy: true, // Permite reinicializar a tabela com novos dados
+      destroy: true,
       language: { url: '//cdn.datatables.net/plug-ins/2.0.8/i18n/pt-BR.json' }
     });
   } catch (erro) {
@@ -183,7 +171,6 @@ async function carregarEstoque() {
   if (!tabelaEstoque.length || !loader.length) { if(loader.length) loader.addClass('hidden'); return; }
 
   try {
-    // O endpoint correto para listar produtos é /produtos
     const resposta = await apiFetch('/produtos');
     if (!resposta.ok) {
       throw new Error('Falha ao carregar produtos');
@@ -217,15 +204,12 @@ async function carregarFinanceiro() {
   if (!resumoDiv || !loader) { if(loader) loader.classList.add('hidden'); return; }
 
   try {
-    // O endpoint da nova API para resumo é /vendas/resumo
     const resposta = await apiFetch('/vendas/resumo');
     if (!resposta.ok) {
       throw new Error('Falha ao carregar resumo financeiro');
     }
     const resumo = await resposta.json();
 
-    // A API retorna 'receitaTotal'. Exibimos essa informação.
-    // Os campos 'despesas' e 'lucro' não estão disponíveis neste endpoint.
     resumoDiv.innerHTML = `
       <p><strong>Receita Total:</strong> R$ ${resumo.receitaTotal.toFixed(2)}</p>
       <p><strong>Total de Vendas:</strong> ${resumo.totalVendas}</p>
@@ -244,7 +228,6 @@ async function carregarRelatorios() {
   if (!tabelaRelatorios.length || !loader.length) { if(loader.length) loader.addClass('hidden'); return; }
 
   try {
-    // Usaremos o endpoint /vendas para gerar um relatório de todas as vendas
     const resposta = await apiFetch('/vendas');
     if (!resposta.ok) {
       throw new Error('Falha ao carregar relatórios');
