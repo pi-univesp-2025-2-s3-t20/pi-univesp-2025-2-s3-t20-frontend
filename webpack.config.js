@@ -62,8 +62,9 @@ module.exports = (env, argv) => {
         chunks: ['main'],
       }),
       new Dotenv({
-        path: path.resolve(__dirname, '.env.production'),
-        systemvars: true,
+        // Carrega .env.production apenas em desenvolvimento local
+        path: !isProduction ? path.resolve(__dirname, '.env.production') : undefined,
+        systemvars: true, // Permite que variáveis do sistema (Netlify) tenham prioridade
       }),
       new CopyPlugin({
         patterns: [
