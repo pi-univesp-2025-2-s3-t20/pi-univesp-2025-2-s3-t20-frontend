@@ -36,43 +36,43 @@ module.exports = (env, argv) => {
     plugins: [
       // Gera o index.html com o script injetado
       new HtmlWebpackPlugin({
-        template: './src/index.html', // Seu template HTML
+        template: path.resolve(__dirname, 'src', 'index.html'), // Seu template HTML
         filename: 'index.html',
         chunks: ['main'],
       }),
       // Gera o login.html com o script injetado
       new HtmlWebpackPlugin({
-        template: './src/login.html', // Seu template de login
+        template: path.resolve(__dirname, 'src', 'login.html'), // Seu template de login
         filename: 'login.html',
         chunks: ['main'],
       }),
       // Gera o cadastro_pedido.html com o script injetado
       new HtmlWebpackPlugin({
-        template: './src/cadastro_pedido.html', // Seu template de cadastro
+        template: path.resolve(__dirname, 'src', 'cadastro_pedido.html'), // Seu template de cadastro
         filename: 'cadastro_pedido.html',
         chunks: ['main'],
       }),
       // Gera o pedidos.html com o script injetado
       new HtmlWebpackPlugin({
-        template: './src/pedidos.html',
+        template: path.resolve(__dirname, 'src', 'pedidos.html'),
         filename: 'pedidos.html',
         chunks: ['main'],
       }),
       // Gera o estoque.html com o script injetado
       new HtmlWebpackPlugin({
-        template: './src/estoque.html',
+        template: path.resolve(__dirname, 'src', 'estoque.html'),
         filename: 'estoque.html',
         chunks: ['main'],
       }),
       // Gera o financeiro.html com o script injetado
       new HtmlWebpackPlugin({
-        template: './src/financeiro.html',
+        template: path.resolve(__dirname, 'src', 'financeiro.html'),
         filename: 'financeiro.html',
         chunks: ['main'],
       }),
       // Gera o relatorios.html com o script injetado
       new HtmlWebpackPlugin({
-        template: './src/relatorios.html',
+        template: path.resolve(__dirname, 'src', 'relatorios.html'),
         filename: 'relatorios.html',
         chunks: ['main'],
       }),
