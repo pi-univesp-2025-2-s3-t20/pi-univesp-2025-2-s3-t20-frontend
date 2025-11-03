@@ -23,7 +23,7 @@
       height: 100%;
       background: url('img/fotos_salgados.jpg') no-repeat center center fixed;
       background-size: cover;
-      opacity: 0.3;
+      opacity: 0.3; /* ajuste conforme desejar */
       z-index: -1;
     }
 
@@ -42,24 +42,20 @@
       padding: 40px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-      text-align: center;
     }
 
-    .nav-buttons a,
-    .nav-buttons button {
+    .nav-buttons a {
       text-decoration: none;
       padding: 12px 20px;
       background-color: #007bff;
       color: white;
       border-radius: 5px;
+      text-align: center;
       font-size: 16px;
       transition: background-color 0.3s ease;
-      border: none;
-      cursor: pointer;
     }
 
-    .nav-buttons a:hover,
-    .nav-buttons button:hover {
+    .nav-buttons a:hover {
       background-color: #0056b3;
     }
   </style>
@@ -72,28 +68,11 @@
       <a href="estoque.html">Estoque</a>
       <a href="financeiro.html">Financeiro</a>
       <a href="relatorios.html">Relatórios</a>
-      <button id="btn-logout">Sair</button>
+      <a href="login.html">Sair</a>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const isAuthenticated = localStorage.getItem('auth') === 'true';
-
-      if (!isAuthenticated) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      const btnLogout = document.getElementById('btn-logout');
-      if (btnLogout) {
-        btnLogout.addEventListener('click', () => {
-          localStorage.clear();
-          window.location.href = 'login.html';
-        });
-      }
-    });
-  </script>
 </body>
 </html>
+
+
 

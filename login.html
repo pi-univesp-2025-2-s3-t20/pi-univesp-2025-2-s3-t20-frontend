@@ -35,7 +35,7 @@
       text-align: center;
       margin: auto;
       position: relative;
-      top: 15%;
+      top: 20%;
     }
 
     .login-container h1 {
@@ -63,46 +63,17 @@
     .login-container button:hover {
       background-color: #0056b3;
     }
-
-    .forgot-password {
-      display: block;
-      margin-top: 10px;
-      color: #007bff;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    .forgot-password:hover {
-      text-decoration: underline;
-    }
-
-    footer {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      text-align: center;
-      padding: 10px 0;
-      font-size: 14px;
-      color: #333;
-      background-color: rgba(255, 255, 255, 0); /* fundo transparente */
-      border-top: none; /* remove a linha superior */
-    }
   </style>
 </head>
 <body>
   <div class="login-container">
     <h1>Login</h1>
     <form id="form-login">
-      <input type="email" id="email" placeholder="Email" required />
+      <input type="email" placeholder="Email" required />
       <input type="password" placeholder="Senha" required />
       <button type="submit">Entrar</button>
     </form>
-    <a href="#" class="forgot-password" id="forgot-password">Esqueceu a senha?</a>
   </div>
-
-  <footer>
-    Desenvolvido por Áuria, Gabriella, Lincoln, Marcio, Priscila, Richard, Rodner e Thais
-  </footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -112,7 +83,6 @@
       }
     });
 
-    // Login
     document.getElementById('form-login').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -140,32 +110,12 @@
         alert('Erro ao conectar com o servidor. Verifique se a API está ativa.');
       }
     });
-
-    // Esqueceu a senha
-    document.getElementById('forgot-password').addEventListener('click', async (e) => {
-      e.preventDefault();
-      const email = prompt('Informe o seu e-mail cadastrado para recuperação de senha:');
-      if (!email) return;
-
-      try {
-        const resposta = await fetch('http://localhost:3000/recuperar-senha', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-
-        if (resposta.ok) {
-          alert('Um link de recuperação foi enviado para o seu e-mail.');
-        } else {
-          alert('E-mail não encontrado ou erro ao enviar o link.');
-        }
-      } catch (erro) {
-        console.error('Erro ao enviar o link de recuperação:', erro);
-        alert('Erro ao conectar com o servidor. Verifique se a API está ativa.');
-      }
-    });
   </script>
 </body>
 </html>
+
+
+
+
 
 
