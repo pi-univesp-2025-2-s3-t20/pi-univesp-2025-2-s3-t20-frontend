@@ -25,7 +25,7 @@ O frontend consome dados de uma API REST para todas as operações. A URL da API
 
 3.  **Configure as variáveis de ambiente:**
     - Renomeie o arquivo `.env.example` para `.env`.
-    - Altere o valor de `BASE_URL` para o endereço da sua API backend (ex: `http://localhost:3000`).
+    - Altere o valor de `BASE_URL` para o endereço da sua API backend (ex: `https://protestant-amberly-univesp-pi-2025-s2-832c3de0.koyeb.app`).
 
 4.  **Execute em modo de desenvolvimento:**
     Este comando iniciará um servidor de desenvolvimento (geralmente em `http://localhost:8080`) com recarregamento automático.
