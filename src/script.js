@@ -24,17 +24,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formLogin) {
       formLogin.addEventListener('submit', handleLogin);
     }
-  } else if (path.includes('/cadastro_pedido')) {
+  } else if (path.includes('/cadastro_produto')) {
     const formProduto = document.getElementById('form-produto');
     if (formProduto) {
       formProduto.addEventListener('submit', handleCadastroProduto);
     }
-  } else if (path.includes('/pedidos')) {
-    carregarVendas();
+  } else if (path.includes('/cadastro_pedido')) {
+    const formPedido = document.getElementById('form-pedido');
+    if (formPedido) {
+      formPedido.addEventListener('submit', handleCadastroPedido);
+      carregarClientesParaDropdown();
+      carregarProdutosParaDropdown();
+      carregarFormasPagamentoParaDropdown();
+    }
   } else if (path.includes('/estoque')) {
     carregarEstoque();
   } else if (path.includes('/financeiro')) {
     carregarFinanceiro();
+  } else if (path.includes('/pedidos')) {
+    carregarVendas();
   } else if (path.includes('/relatorios')) {
     carregarRelatorios();
   }
@@ -91,6 +99,47 @@ async function handleLogin(e) {
   }
 }
 
+async function handleCadastroPedido(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const formProps = Object.fromEntries(formData.entries());
+
+  const submitButton = e.target.querySelector('button[type="submit"]');
+  const loader = document.getElementById('loader-overlay');
+
+  // Mostra o loader e desabilita o botão
+  loader.classList.remove('hidden');
+  submitButton.disabled = true;
+
+  // Monta o objeto 'pedido' conforme a especificação da API (VendaDTO)
+  const pedido = {
+    clienteId: parseInt(formProps.clienteId, 10),
+    produtoId: parseInt(formProps.produtoId, 10),
+    formaPagamentoId: parseInt(formProps.formaPagamentoId, 10),
+    data: formProps.data, // A API espera uma string 'YYYY-MM-DD'
+    quantidade: parseInt(formProps.quantidade, 10),
+    precoUnitario: parseFloat(formProps.precoUnitario)
+  };
+  try {
+    const resposta = await apiFetch('/vendas', { method: 'POST', body: JSON.stringify(pedido) }); // A API espera clienteId e produtoId
+
+    if (resposta.status === 201) {
+      alert('Pedido cadastrado com sucesso!');
+      e.target.reset();
+    } else {
+      const errorData = await resposta.json();
+      alert(`Erro ao salvar pedido: ${errorData.message || 'Verifique os dados ou o servidor.'}`);
+    }
+  } catch (erro) {
+    console.error('Erro ao cadastrar pedido:', erro);
+    alert('Erro ao conectar com o servidor.');
+  } finally {
+    // Esconde o loader e reabilita o botão
+    loader.classList.add('hidden');
+    submitButton.disabled = false;
+  }
+}
+
 async function handleCadastroProduto(e) {
   e.preventDefault();
   const formData = new FormData(e.target);
@@ -112,10 +161,104 @@ async function handleCadastroProduto(e) {
   }
 }
 
+async function carregarClientesParaDropdown() {
+  const selectCliente = document.getElementById('clienteId');
+  if (!selectCliente) {
+    console.warn('Elemento select para clientes não encontrado.');
+    return;
+  }
+
+  try {
+    const resposta = await apiFetch('/clientes');
+    if (!resposta.ok) {
+      throw new Error('Falha ao carregar clientes');
+    }
+    const clientes = await resposta.json();
+
+    clientes.forEach(cliente => {
+      const option = document.createElement('option');
+      option.value = cliente.id;
+      option.textContent = cliente.nomeCliente;
+      selectCliente.appendChild(option);
+    });
+  } catch (erro) {
+    console.error('Erro ao carregar clientes para o dropdown:', erro);
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'Erro ao carregar clientes';
+    selectCliente.appendChild(option);
+    selectCliente.disabled = true;
+  }
+}
+
+async function carregarProdutosParaDropdown() {
+  const selectProduto = document.getElementById('produtoId');
+  if (!selectProduto) {
+    console.warn('Elemento select para produtos não encontrado.');
+    return;
+  }
+
+  try {
+    const resposta = await apiFetch('/produtos');
+    if (!resposta.ok) {
+      throw new Error('Falha ao carregar produtos');
+    }
+    const produtos = await resposta.json();
+
+    produtos.forEach(produto => {
+      const option = document.createElement('option');
+      option.value = produto.id;
+      option.textContent = produto.produto;
+      selectProduto.appendChild(option);
+    });
+  } catch (erro) {
+    console.error('Erro ao carregar produtos para o dropdown:', erro);
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'Erro ao carregar produtos';
+    selectProduto.appendChild(option);
+    selectProduto.disabled = true;
+  }
+}
+
+async function carregarFormasPagamentoParaDropdown() {
+  const selectFormaPagamento = document.getElementById('formaPagamentoId');
+  if (!selectFormaPagamento) {
+    console.warn('Elemento select para formas de pagamento não encontrado.');
+    return;
+  }
+
+  try {
+    const resposta = await apiFetch('/formas-pagamento');
+    if (!resposta.ok) {
+      throw new Error('Falha ao carregar formas de pagamento');
+    }
+    const formasPagamento = await resposta.json();
+
+    formasPagamento.forEach(forma => {
+      const option = document.createElement('option');
+      option.value = forma.id;
+      option.textContent = forma.formaPagamento;
+      selectFormaPagamento.appendChild(option);
+    });
+  } catch (erro) {
+    console.error('Erro ao carregar formas de pagamento para o dropdown:', erro);
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'Erro ao carregar formas de pagamento';
+    selectFormaPagamento.appendChild(option);
+    selectFormaPagamento.disabled = true;
+  }
+}
+
 async function carregarVendas() {
   const tabelaPedidos = $('#tabela-pedidos');
   const loader = $('#loader-overlay');
-  if (!tabelaPedidos.length || !loader.length) { if(loader.length) loader.addClass('hidden'); return; }
+  if (!tabelaPedidos.length || !loader.length) {
+    console.warn('Tabela de pedidos ou loader não encontrados na página.');
+    return;
+  }
+  loader.removeClass('hidden'); // Show the loader
 
   try {
     const resposta = await apiFetch('/vendas');
@@ -171,7 +314,11 @@ async function apiFetch(endpoint, options = {}) {
 async function carregarEstoque() {
   const tabelaEstoque = $('#tabela-estoque');
   const loader = $('#loader-overlay');
-  if (!tabelaEstoque.length || !loader.length) { if(loader.length) loader.addClass('hidden'); return; }
+  if (!tabelaEstoque.length || !loader.length) {
+    console.warn('Tabela de estoque ou loader não encontrados na página.');
+    return;
+  }
+  loader.removeClass('hidden'); // Show the loader
 
   try {
     const resposta = await apiFetch('/produtos');
@@ -203,8 +350,12 @@ async function carregarEstoque() {
 
 async function carregarFinanceiro() {
   const resumoDiv = document.getElementById('resumo');
-  const loader = document.getElementById('loader-overlay');
-  if (!resumoDiv || !loader) { if(loader) loader.classList.add('hidden'); return; }
+  const loader = $('#loader-overlay');
+  if (!resumoDiv || !loader.length) {
+    console.warn('Div de resumo financeiro ou loader não encontrados na página.');
+    return;
+  }
+  loader.removeClass('hidden'); // Show the loader
 
   try {
     const resposta = await apiFetch('/vendas/resumo');
@@ -221,14 +372,18 @@ async function carregarFinanceiro() {
     resumoDiv.innerHTML = '<p>Erro ao carregar o resumo financeiro.</p>';
     console.error('Erro ao carregar financeiro:', erro);
   } finally {
-    loader.classList.add('hidden');
+    loader.addClass('hidden');
   }
 }
 
 async function carregarRelatorios() {
   const tabelaRelatorios = $('#tabela-relatorios');
   const loader = $('#loader-overlay');
-  if (!tabelaRelatorios.length || !loader.length) { if(loader.length) loader.addClass('hidden'); return; }
+  if (!tabelaRelatorios.length || !loader.length) {
+    console.warn('Tabela de relatórios ou loader não encontrados na página.');
+    return;
+  }
+  loader.removeClass('hidden'); // Show the loader
 
   try {
     const resposta = await apiFetch('/vendas');
@@ -253,6 +408,6 @@ async function carregarRelatorios() {
     tabelaRelatorios.find('tbody').html('<tr><td colspan="5">Erro ao carregar relatórios.</td></tr>');
     console.error('Erro ao carregar relatórios:', erro);
   } finally {
-    loader.addClass('hidden');
+    loader.addClass('hidden'); // Hide the loader
   }
 }

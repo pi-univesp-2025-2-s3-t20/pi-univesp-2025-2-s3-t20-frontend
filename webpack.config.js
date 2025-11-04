@@ -41,6 +41,11 @@ module.exports = (env, argv) => {
         chunks: ['main'],
       }),
       new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'src', 'cadastro_produto.html'),
+        filename: 'cadastro_produto.html',
+        chunks: ['main'],
+      }),
+      new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'cadastro_pedido.html'),
         filename: 'cadastro_pedido.html',
         chunks: ['main'],

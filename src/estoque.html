@@ -28,18 +28,24 @@
 
     .botoes-topo {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       margin-bottom: 20px;
     }
 
     .botoes-topo a {
       text-decoration: none;
       padding: 10px 20px;
-      background-color: #6c757d;
       color: white;
       border-radius: 5px;
       font-size: 14px;
       transition: background-color 0.3s ease;
+    }
+    .botoes-topo a.voltar {
+      background-color: #6c757d;
+    }
+
+    .botoes-topo a.cadastrar {
+      background-color: #007bff;
     }
 
     .botoes-topo a:hover {
@@ -74,7 +80,8 @@
 <body>
   <div class="container">
     <div class="botoes-topo">
-      <a href="index.html">Voltar</a>
+      <a href="index.html" class="voltar">Voltar</a>
+      <a href="cadastro_produto.html" class="cadastrar">Cadastrar Produto</a>
     </div>
     <h1>Estoque Atual</h1>
     <table id="tabela-estoque" class="display" style="width:100%">
@@ -94,7 +101,7 @@
     </table>
   </div>
 
-  <div id="loader-overlay" class="loader-overlay">
+  <div id="loader-overlay" class="loader-overlay hidden">
     <div class="loader"></div>
   </div>
 
