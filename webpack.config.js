@@ -91,6 +91,26 @@ module.exports = (env, argv) => {
         chunks: ['main'],
       }),
       new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'src', 'clientes.html'),
+        filename: 'clientes.html',
+        inject: 'body',
+        minify: {
+          removeRedundantAttributes: false,
+        },
+        publicPath: '/',
+        chunks: ['main'],
+      }),
+      new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'src', 'cadastro_cliente.html'),
+        filename: 'cadastro_cliente.html',
+        inject: 'body',
+        minify: {
+          removeRedundantAttributes: false,
+        },
+        publicPath: '/',
+        chunks: ['main'],
+      }),
+      new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'financeiro.html'),
         filename: 'financeiro.html',
         inject: 'body',

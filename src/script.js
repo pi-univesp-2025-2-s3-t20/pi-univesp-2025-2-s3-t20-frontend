@@ -48,6 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
       carregarFormasPagamentoParaDropdown();
       verificarModoEdicaoPedido();
     }
+  } else if (path.includes('/cadastro_cliente')) {
+    const formCliente = document.getElementById('form-cliente');
+    if (formCliente) {
+      formCliente.addEventListener('submit', handleCadastroCliente);
+      verificarModoEdicaoCliente();
+    }
+  } else if (path.includes('/clientes')) {
+    carregarClientes();
   } else if (path.includes('/estoque')) {
     carregarEstoque();
   } else if (path.includes('/financeiro')) {
@@ -195,6 +203,76 @@ async function handleCadastroProduto(e) {
     submitButton.disabled = false;
   }
 }
+
+async function handleCadastroCliente(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const cliente = Object.fromEntries(formData.entries());
+  const urlParams = new URLSearchParams(window.location.search);
+  const clienteId = urlParams.get('id');
+
+  const method = clienteId ? 'PUT' : 'POST';
+  const endpoint = clienteId ? `/clientes/${clienteId}` : '/clientes';
+
+  const submitButton = document.getElementById('btn-salvar');
+  const loader = document.getElementById('loader-overlay');
+
+  loader.classList.remove('hidden');
+  submitButton.disabled = true;
+
+  try {
+    const resposta = await apiFetch(endpoint, { method, body: JSON.stringify(cliente) });
+
+    if (resposta.ok) {
+      alert(`Cliente ${clienteId ? 'atualizado' : 'cadastrado'} com sucesso!`);
+      window.location.href = 'clientes.html';
+    } else {
+      const errorData = await resposta.json();
+      alert(`Erro ao salvar cliente: ${errorData.message || 'Verifique os dados ou o servidor.'}`);
+    }
+  } catch (erro) {
+    console.error('Erro ao conectar com o servidor:', erro);
+    alert('Erro ao conectar com o servidor.');
+  } finally {
+    loader.classList.add('hidden');
+    submitButton.disabled = false;
+  }
+}
+
+async function verificarModoEdicaoCliente() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const clienteId = urlParams.get('id');
+
+  if (clienteId) {
+    document.getElementById('titulo-formulario').textContent = 'Editar Cliente';
+    document.getElementById('btn-salvar').textContent = 'Atualizar Cliente';
+
+    const loader = document.getElementById('loader-overlay');
+    loader.classList.remove('hidden');
+
+    try {
+      const resposta = await apiFetch(`/clientes/${clienteId}`);
+      if (!resposta.ok) {
+        throw new Error('Cliente não encontrado.');
+      }
+      const cliente = await resposta.json();
+
+      // Preenche o formulário com os dados do cliente
+      document.getElementById('nomeCliente').value = cliente.nomeCliente || '';
+      document.getElementById('tipoCliente').value = cliente.tipoCliente || '';
+      document.getElementById('bairro').value = cliente.bairro || '';
+      document.getElementById('cidade').value = cliente.cidade || '';
+
+    } catch (erro) {
+      console.error('Erro ao buscar dados do cliente para edição:', erro);
+      alert('Não foi possível carregar os dados do cliente. Você será redirecionado.');
+      window.location.href = 'clientes.html';
+    } finally {
+      loader.classList.add('hidden');
+    }
+  }
+}
+
 
 async function verificarModoEdicaoProduto() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -389,7 +467,7 @@ async function carregarVendas() {
         {
           data: 'id',
           render: function (data, type, row) {
-            return `<a href="cadastro_pedido?id=${data}" class="btn-acao btn-editar">Editar</a>`;
+            return `<a href="cadastro_pedido.html?id=${data}" class="btn-acao btn-editar">Editar</a>`;
           }
         }
       ],
@@ -399,6 +477,48 @@ async function carregarVendas() {
   } catch (erro) {
     tabelaPedidos.find('tbody').html('<tr><td colspan="8">Erro ao carregar vendas.</td></tr>');
     console.error('Erro ao carregar vendas:', erro);
+  } finally {
+    loader.addClass('hidden');
+  }
+}
+
+async function carregarClientes() {
+  const tabelaClientes = $('#tabela-clientes');
+  const loader = $('#loader-overlay');
+  if (!tabelaClientes.length || !loader.length) {
+    if(loader.length) loader.addClass('hidden');
+    return;
+  }
+  loader.removeClass('hidden');
+
+  try {
+    const resposta = await apiFetch('/clientes');
+    if (!resposta.ok) {
+      throw new Error('Falha ao carregar clientes');
+    }
+    const clientes = await resposta.json();
+
+    tabelaClientes.DataTable({
+      data: clientes,
+      columns: [
+        { data: 'idCliente' },
+        { data: 'nomeCliente' },
+        { data: 'tipoCliente' },
+        { data: 'bairro' },
+        { data: 'cidade' },
+        {
+          data: 'id',
+          render: function (data, type, row) {
+            return `<a href="cadastro_cliente.html?id=${data}" class="btn-acao btn-editar">Editar</a>`;
+          }
+        }
+      ],
+      destroy: true,
+      language: ptBR
+    });
+  } catch (erro) {
+    tabelaClientes.find('tbody').html('<tr><td colspan="6">Erro ao carregar clientes.</td></tr>');
+    console.error('Erro ao carregar clientes:', erro);
   } finally {
     loader.addClass('hidden');
   }
@@ -453,7 +573,7 @@ async function carregarEstoque() {
         {
           data: 'id',
           render: function (data, type, row) {
-            return `<a href="cadastro_produto?id=${data}" class="btn-acao">Editar</a>`;
+            return `<a href="cadastro_produto.html?id=${data}" class="btn-acao">Editar</a>`;
           }
         }
       ],
