@@ -3,78 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Relatórios</title>
-  <!-- DataTables CSS -->
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
-
-  <style>
-    html, body {
-      margin: 0; padding: 0; height: 100%;
-      font-family: Arial, sans-serif;
-      position: relative; overflow: hidden;
-    }
-    body::before {
-      content: ""; position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: url('img/fotos_salgados.jpg') no-repeat center center fixed;
-      background-size: cover; opacity: 0.3; z-index: -1;
-    }
-    .container {
-      padding: 40px;
-      background-color: rgba(255,255,255,0.9);
-      margin: 50px auto;
-      width: 80%;
-      border-radius: 10px;
-    }
-
-    .botoes-topo {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 20px;
-    }
-
-    .botoes-topo a {
-      text-decoration: none;
-      padding: 10px 20px;
-      background-color: #6c757d;
-      color: white;
-      border-radius: 5px;
-      font-size: 14px;
-      transition: background-color 0.3s ease;
-    }
-
-    .botoes-topo a:hover {
-      background-color: #5a6268;
-    }
-
-    .loader-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .loader-overlay .loader {
-      border: 8px solid #f3f3f3;
-      border-top: 8px solid #3498db;
-      border-radius: 50%;
-      width: 60px; height: 60px;
-      animation: spin 1.5s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .hidden { display: none; }
-  </style>
 </head>
 <body>
   <div class="container">
     <div class="botoes-topo">
-      <a href="index.html">Voltar</a>
+      <a href="index.html" class="voltar">Voltar</a>
     </div>
     <h1>Relatórios de Vendas</h1>
     <table id="tabela-relatorios" class="display" style="width:100%">
@@ -96,9 +29,5 @@
   <div id="loader-overlay" class="loader-overlay hidden">
     <div class="loader"></div>
   </div>
-
-  <!-- jQuery e DataTables JS -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
 </body>
 </html>

@@ -1,3 +1,12 @@
+import './style.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+// Importa jQuery e DataTables
+import $ from 'jquery';
+import 'datatables.net';
+import 'datatables.net-dt/css/dataTables.dataTables.min.css';
+import ptBR from 'datatables.net-plugins/i18n/pt-BR.mjs';
+
 const API_BASE_URL = process.env.BASE_URL;
 console.log('API Base URL:', API_BASE_URL);
 
@@ -28,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formProduto = document.getElementById('form-produto');
     if (formProduto) {
       formProduto.addEventListener('submit', handleCadastroProduto);
+      verificarModoEdicaoProduto(); // Verifica se está em modo de edição
     }
   } else if (path.includes('/cadastro_pedido')) {
     const formPedido = document.getElementById('form-pedido');
@@ -36,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
       carregarClientesParaDropdown();
       carregarProdutosParaDropdown();
       carregarFormasPagamentoParaDropdown();
+      verificarModoEdicaoPedido();
     }
   } else if (path.includes('/estoque')) {
     carregarEstoque();
@@ -47,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarRelatorios();
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated && !isLoginPage) {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
       btnLogout.addEventListener('click', () => {
@@ -104,11 +115,16 @@ async function handleCadastroPedido(e) {
   const formData = new FormData(e.target);
   const formProps = Object.fromEntries(formData.entries());
 
-  const submitButton = e.target.querySelector('button[type="submit"]');
+  const urlParams = new URLSearchParams(window.location.search);
+  const pedidoId = urlParams.get('id');
+
+  const method = pedidoId ? 'PUT' : 'POST';
+  const endpoint = pedidoId ? `/vendas/${pedidoId}` : '/vendas';
+
+  const submitButton = document.getElementById('btn-salvar');
   const loader = document.getElementById('loader-overlay');
 
-  // Mostra o loader e desabilita o botão
-  loader.classList.remove('hidden');
+  loader.classList.remove('hidden'); // Mostra o loader
   submitButton.disabled = true;
 
   // Monta o objeto 'pedido' conforme a especificação da API (VendaDTO)
@@ -121,11 +137,11 @@ async function handleCadastroPedido(e) {
     precoUnitario: parseFloat(formProps.precoUnitario)
   };
   try {
-    const resposta = await apiFetch('/vendas', { method: 'POST', body: JSON.stringify(pedido) }); // A API espera clienteId e produtoId
+    const resposta = await apiFetch(endpoint, { method, body: JSON.stringify(pedido) });
 
-    if (resposta.status === 201) {
-      alert('Pedido cadastrado com sucesso!');
-      e.target.reset();
+    if (resposta.ok) {
+      alert(`Pedido ${pedidoId ? 'atualizado' : 'cadastrado'} com sucesso!`);
+      window.location.href = 'pedidos.html';
     } else {
       const errorData = await resposta.json();
       alert(`Erro ao salvar pedido: ${errorData.message || 'Verifique os dados ou o servidor.'}`);
@@ -134,8 +150,7 @@ async function handleCadastroPedido(e) {
     console.error('Erro ao cadastrar pedido:', erro);
     alert('Erro ao conectar com o servidor.');
   } finally {
-    // Esconde o loader e reabilita o botão
-    loader.classList.add('hidden');
+    loader.classList.add('hidden'); // Esconde o loader
     submitButton.disabled = false;
   }
 }
@@ -144,13 +159,30 @@ async function handleCadastroProduto(e) {
   e.preventDefault();
   const formData = new FormData(e.target);
   const produto = Object.fromEntries(formData.entries());
+  const urlParams = new URLSearchParams(window.location.search);
+  const produtoId = urlParams.get('id');
+
+  const method = produtoId ? 'PUT' : 'POST';
+  const endpoint = produtoId ? `/produtos/${produtoId}` : '/produtos';
+
+  // Converte os valores para os tipos corretos que a API espera
+  produto.custoUnitario = parseFloat(produto.custoUnitario) || null;
+  produto.precoSugerido = parseFloat(produto.precoSugerido) || null;
+  produto.pedidoMinimo = parseInt(produto.pedidoMinimo, 10) || null;
+  produto.centoPreco = parseFloat(produto.centoPreco) || null;
+
+  const submitButton = document.getElementById('btn-salvar');
+  const loader = document.getElementById('loader-overlay');
+
+  loader.classList.remove('hidden');
+  submitButton.disabled = true;
 
   try {
-    const resposta = await apiFetch('/produtos', { method: 'POST', body: JSON.stringify(produto) });
+    const resposta = await apiFetch(endpoint, { method, body: JSON.stringify(produto) });
 
-    if (resposta.status === 201) {
-      alert('Produto cadastrado com sucesso!');
-      e.target.reset();
+    if (resposta.ok) {
+      alert(`Produto ${produtoId ? 'atualizado' : 'cadastrado'} com sucesso!`);
+      window.location.href = 'estoque.html';
     } else {
       const errorData = await resposta.json();
       alert(`Erro ao salvar produto: ${errorData.message || 'Verifique os dados ou o servidor.'}`);
@@ -158,6 +190,82 @@ async function handleCadastroProduto(e) {
   } catch (erro) {
     console.error('Erro ao conectar com o servidor:', erro);
     alert('Erro ao conectar com o servidor.');
+  } finally {
+    loader.classList.add('hidden');
+    submitButton.disabled = false;
+  }
+}
+
+async function verificarModoEdicaoProduto() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const produtoId = urlParams.get('id');
+
+  if (produtoId) {
+    document.getElementById('titulo-formulario').textContent = 'Editar Produto';
+    document.getElementById('btn-salvar').textContent = 'Atualizar Produto';
+
+    try {
+      const resposta = await apiFetch(`/produtos/${produtoId}`);
+      if (!resposta.ok) {
+        throw new Error('Produto não encontrado.');
+      }
+      const produto = await resposta.json();
+
+      // Preenche o formulário com os dados do produto
+      document.getElementById('produto').value = produto.produto || '';
+      document.getElementById('categoria').value = produto.categoria || '';
+      document.getElementById('custoUnitario').value = produto.custoUnitario || '';
+      document.getElementById('precoSugerido').value = produto.precoSugerido || '';
+      document.getElementById('pedidoMinimo').value = produto.pedidoMinimo || '';
+      document.getElementById('centoPreco').value = produto.centoPreco || '';
+
+    } catch (erro) {
+      console.error('Erro ao buscar dados do produto para edição:', erro);
+      alert('Não foi possível carregar os dados do produto. Você será redirecionado.');
+      window.location.href = 'estoque.html';
+    }
+  }
+}
+
+async function verificarModoEdicaoPedido() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const pedidoId = urlParams.get('id');
+
+  if (pedidoId) {
+    document.getElementById('titulo-formulario').textContent = 'Editar Pedido';
+    document.getElementById('btn-salvar').textContent = 'Atualizar Pedido';
+
+    const loader = document.getElementById('loader-overlay');
+    loader.classList.remove('hidden');
+
+    try {
+      // Aguarda o carregamento dos dropdowns antes de selecionar os valores
+      await Promise.all([
+        carregarClientesParaDropdown(),
+        carregarProdutosParaDropdown(),
+        carregarFormasPagamentoParaDropdown()
+      ]);
+
+      const resposta = await apiFetch(`/vendas/${pedidoId}`);
+      if (!resposta.ok) throw new Error('Pedido não encontrado.');
+      
+      const pedido = await resposta.json();
+
+      // Preenche o formulário
+      document.getElementById('clienteId').value = pedido.cliente.id;
+      document.getElementById('produtoId').value = pedido.produto.id;
+      document.getElementById('formaPagamentoId').value = pedido.formaPagamento.id;
+      document.getElementById('data').value = pedido.data;
+      document.getElementById('quantidade').value = pedido.quantidade;
+      document.getElementById('precoUnitario').value = pedido.precoUnitario;
+
+    } catch (erro) {
+      console.error('Erro ao buscar dados do pedido para edição:', erro);
+      alert('Não foi possível carregar os dados do pedido. Você será redirecionado.');
+      window.location.href = 'pedidos.html';
+    } finally {
+      loader.classList.add('hidden');
+    }
   }
 }
 
@@ -255,7 +363,7 @@ async function carregarVendas() {
   const tabelaPedidos = $('#tabela-pedidos');
   const loader = $('#loader-overlay');
   if (!tabelaPedidos.length || !loader.length) {
-    console.warn('Tabela de pedidos ou loader não encontrados na página.');
+    if(loader.length) loader.addClass('hidden');
     return;
   }
   loader.removeClass('hidden'); // Show the loader
@@ -277,10 +385,16 @@ async function carregarVendas() {
         { data: 'quantidade' },
         { data: 'precoUnitario', render: (data) => data.toFixed(2) },
         { data: 'formaPagamento.formaPagamento' },
-        { data: 'receitaTotal', render: (data) => data.toFixed(2) }
+        { data: 'receitaTotal', render: (data) => data.toFixed(2) },
+        {
+          data: 'id',
+          render: function (data, type, row) {
+            return `<a href="cadastro_pedido?id=${data}" class="btn-acao btn-editar">Editar</a>`;
+          }
+        }
       ],
       destroy: true,
-      language: { url: '//cdn.datatables.net/plug-ins/2.0.8/i18n/pt-BR.json' }
+      language: ptBR
     });
   } catch (erro) {
     tabelaPedidos.find('tbody').html('<tr><td colspan="8">Erro ao carregar vendas.</td></tr>');
@@ -315,7 +429,7 @@ async function carregarEstoque() {
   const tabelaEstoque = $('#tabela-estoque');
   const loader = $('#loader-overlay');
   if (!tabelaEstoque.length || !loader.length) {
-    console.warn('Tabela de estoque ou loader não encontrados na página.');
+    if(loader.length) loader.addClass('hidden');
     return;
   }
   loader.removeClass('hidden'); // Show the loader
@@ -335,10 +449,16 @@ async function carregarEstoque() {
         { data: 'custoUnitario', render: (data) => data ? data.toFixed(2) : 'N/A' },
         { data: 'precoSugerido', render: (data) => data ? data.toFixed(2) : 'N/A' },
         { data: 'pedidoMinimo', render: (data) => data || 'N/A' },
-        { data: 'centoPreco', render: (data) => data ? data.toFixed(2) : 'N/A' }
+        { data: 'centoPreco', render: (data) => data ? data.toFixed(2) : 'N/A' },
+        {
+          data: 'id',
+          render: function (data, type, row) {
+            return `<a href="cadastro_produto?id=${data}" class="btn-acao">Editar</a>`;
+          }
+        }
       ],
       destroy: true,
-      language: { url: '//cdn.datatables.net/plug-ins/2.0.8/i18n/pt-BR.json' }
+      language: ptBR
     });
   } catch (erro) {
     tabelaEstoque.find('tbody').html('<tr><td colspan="6">Erro ao carregar produtos do estoque.</td></tr>');
@@ -352,7 +472,7 @@ async function carregarFinanceiro() {
   const resumoDiv = document.getElementById('resumo');
   const loader = $('#loader-overlay');
   if (!resumoDiv || !loader.length) {
-    console.warn('Div de resumo financeiro ou loader não encontrados na página.');
+    if(loader.length) loader.addClass('hidden');
     return;
   }
   loader.removeClass('hidden'); // Show the loader
@@ -380,7 +500,7 @@ async function carregarRelatorios() {
   const tabelaRelatorios = $('#tabela-relatorios');
   const loader = $('#loader-overlay');
   if (!tabelaRelatorios.length || !loader.length) {
-    console.warn('Tabela de relatórios ou loader não encontrados na página.');
+    if(loader.length) loader.addClass('hidden');
     return;
   }
   loader.removeClass('hidden'); // Show the loader
@@ -402,7 +522,7 @@ async function carregarRelatorios() {
         { data: 'receitaTotal', render: (data) => data.toFixed(2) }
       ],
       destroy: true,
-      language: { url: '//cdn.datatables.net/plug-ins/2.0.8/i18n/pt-BR.json' }
+      language: ptBR
     });
   } catch (erro) {
     tabelaRelatorios.find('tbody').html('<tr><td colspan="5">Erro ao carregar relatórios.</td></tr>');
