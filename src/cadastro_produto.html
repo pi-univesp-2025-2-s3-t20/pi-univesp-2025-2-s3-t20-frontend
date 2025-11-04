@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastro de Produto - Gestão de Estoque</title>
+</head>
+<body>
+  <div class="container-wrapper">
+    <div class="container">
+      <div class="botoes-topo">
+        <a href="estoque.html" class="voltar">Voltar</a>
+      </div>
+      <h1 id="titulo-formulario">Cadastro de Produto</h1>
+      <form id="form-produto">
+        <input type="text" id="produto" name="produto" placeholder="Nome do produto (ex: Coxinha)" required>
+        <input type="text" id="categoria" name="categoria" placeholder="Categoria (ex: Salgado)" required>
+        <input type="number" id="custoUnitario" step="0.01" name="custoUnitario" placeholder="Custo Unitário (R$)" required>
+        <input type="number" id="precoSugerido" step="0.01" name="precoSugerido" placeholder="Preço Sugerido (R$)">
+        <input type="number" id="pedidoMinimo" name="pedidoMinimo" placeholder="Pedido Mínimo (unidades)">
+        <input type="number" id="centoPreco" step="0.01" name="centoPreco" placeholder="Preço do Cento (R$)">
+        <button type="submit" id="btn-salvar">Salvar Produto</button>
+      </form>
+    </div>
+  </div>
+  <div id="loader-overlay" class="loader-overlay hidden">
+    <div class="loader"></div>
+  </div>
+</body>
+</html>
