@@ -507,7 +507,7 @@ async function handleSugerirEAtualizarCusto(produtoId, produtoData, button, tabl
     if (suggestedCost === undefined || suggestedCost === null) throw new Error('Resposta da API de ML inválida.');
 
     // 3. Confirmação do usuário antes de aplicar o custo
-    const custoUnitario = parseFloat(suggestedCost) / quantidade;
+    const custoUnitario = parseFloat(suggestedCost) / 100;
     const confirmacao = confirm(`O custo sugerido é R$ ${custoUnitario.toFixed(2)}. Deseja aplicar este custo ao produto "${produtoData.produto}"?`);
 
     if (!confirmacao) return; // Se o usuário cancelar, a função retorna sem fazer nada
