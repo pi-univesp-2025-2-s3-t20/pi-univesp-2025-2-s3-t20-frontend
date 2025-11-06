@@ -542,7 +542,21 @@ async function apiFetch(endpoint, options = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  return fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+
+  // Verifica se a resposta é um erro de "Não Autorizado" (401)
+  if (response.status === 401) {
+    // Limpa o token de autenticação do localStorage, pois é inválido ou expirado.
+    localStorage.removeItem('authToken');
+    // Redireciona o usuário para a página de login.
+    window.location.href = 'login.html';
+
+    // Retorna uma promessa que nunca será resolvida para interromper a execução
+    // do código que chamou a apiFetch, evitando erros no console.
+    return new Promise(() => {});
+  }
+
+  return response;
 }
 
 async function carregarEstoque() {
