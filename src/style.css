@@ -132,23 +132,11 @@ h1, h2 {
   margin-bottom: 20px;
 }
 
-/* Estilos de Formulário */
-.form-box {
-  background-color: rgba(255, 255, 255, 0.95);
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  width: 350px;
-}
-
-.form-box label,
 label {
   display: block;
   margin-bottom: 5px;
 }
 
-.form-box input,
-.form-box textarea,
 input[type="text"],
 input[type="number"],
 input[type="date"],
@@ -164,7 +152,35 @@ select {
   box-sizing: border-box;
 }
 
-.form-box button,
+.input-com-botao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px; /* Adiciona a margem ao container */
+}
+
+.input-com-botao input {
+  flex-grow: 1; /* Faz o input ocupar o espaço disponível */
+  margin-bottom: 0; /* Remove a margem do input individual */
+}
+
+.input-com-botao button {
+  flex-shrink: 0; /* Impede que o botão encolha */
+  padding: 10px 15px;
+  font-size: 14px;
+  white-space: nowrap; /* Evita que o texto quebre para a próxima linha */
+  background-color: #6c757d; /* Cor cinza (similar ao btn-secondary do Bootstrap) */
+  color: white;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.input-com-botao button:hover {
+  background-color: #218838; /* Um tom de verde mais escuro para o hover */
+  cursor: pointer;
+}
+
 button[type="submit"] {
   width: 100%;
   padding: 12px;
@@ -176,7 +192,6 @@ button[type="submit"] {
   background-color: #007bff;
 }
 
-.form-box button:hover,
 button[type="submit"]:hover {
   background-color: #0056b3;
 }
