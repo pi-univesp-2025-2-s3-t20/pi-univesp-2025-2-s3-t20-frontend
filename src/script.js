@@ -497,8 +497,12 @@ async function handleSugerirEAtualizarCusto(produtoId, produtoData, button, tabl
 
     if (!respostaML.ok) throw new Error('Falha ao obter sugestão da API de ML.');
 
-    const dataML = await respostaML.json();
-    const suggestedCost = dataML?.[0]?.custo_sugerido;
+    // A API de ML pode retornar 'NaN', que não é um JSON válido.
+    // Lemos como texto, substituímos 'NaN' por 'null' e então fazemos o parse.
+    const responseText = await respostaML.text();
+    const cleanedText = responseText.replace(/:NaN/g, ':null');
+    const dataML = JSON.parse(cleanedText);
+    const suggestedCost = dataML?.[0]?.custo_sugerido; // Pega o custo do primeiro resultado
 
     if (suggestedCost === undefined || suggestedCost === null) throw new Error('Resposta da API de ML inválida.');
 
