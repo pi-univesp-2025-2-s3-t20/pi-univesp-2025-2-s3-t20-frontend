@@ -8,7 +8,9 @@ import 'datatables.net-dt/css/dataTables.dataTables.min.css';
 import ptBR from 'datatables.net-plugins/i18n/pt-BR.mjs';
 
 const API_BASE_URL = process.env.BASE_URL;
+const ML_API_BASE_URL = process.env.ML_API_BASE_URL;
 console.log('API Base URL:', API_BASE_URL);
+console.log('ML API Base URL:', ML_API_BASE_URL);
 
 document.addEventListener('DOMContentLoaded', () => {
   const isAuthenticated = !!localStorage.getItem('authToken');
@@ -58,6 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarClientes();
   } else if (path.includes('/estoque')) {
     carregarEstoque();
+    // Adiciona um event listener delegado para os botões de sugerir custo na tabela
+    const tabelaEstoque = document.getElementById('tabela-estoque');
+    if (tabelaEstoque) {
+      tabelaEstoque.addEventListener('click', handleCliqueTabelaEstoque);
+    }
   } else if (path.includes('/financeiro')) {
     carregarFinanceiro();
   } else if (path.includes('/pedidos')) {
@@ -437,6 +444,93 @@ async function carregarFormasPagamentoParaDropdown() {
   }
 }
 
+function handleCliqueTabelaEstoque(e) {
+  // Verifica se o clique foi em um botão de sugerir custo
+  if (e.target && e.target.classList.contains('btn-sugerir-custo-tabela')) {
+    const button = e.target;
+    const produtoId = button.dataset.productId;
+    
+    // Recupera os dados do produto da linha da tabela
+    const table = $('#tabela-estoque').DataTable();
+    const row = table.row($(button).closest('tr'));
+    const produtoData = row.data();
+
+    if (produtoData) {
+      handleSugerirEAtualizarCusto(produtoId, produtoData, button, row);
+    } else {
+      alert('Não foi possível obter os dados do produto.');
+    }
+  }
+}
+
+async function handleSugerirEAtualizarCusto(produtoId, produtoData, button, tableRow) {
+  const loader = document.getElementById('loader-overlay');
+  button.disabled = true;
+  loader.classList.remove('hidden');
+
+  try {
+    // 1. Obter a quantidade total vendida
+    const respostaVendas = await apiFetch(`/vendas/produto/${produtoId}`);
+    let quantidade = -1;
+    if (respostaVendas.ok) {
+      const vendas = await respostaVendas.json();
+      const totalVendido = vendas.reduce((sum, venda) => sum + venda.quantidade, 0);
+
+      if (vendas.length === 0) {
+          alert('Não é possível sugerir um custo para este produto pois ele não possui informações de vendas.');
+          return;
+      }
+      if (totalVendido > 0) {
+        quantidade = totalVendido;
+      }
+    }
+
+    // 2. Chamar a API de Machine Learning
+    const precoUnitario = produtoData.precoSugerido;
+    const receitaTotal = quantidade * precoUnitario;
+
+    const respostaML = await fetch(`${ML_API_BASE_URL}/model/predict`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ produto: produtoData.produto, quantidade, preco_unitario: precoUnitario, receita_total: receitaTotal })
+    });
+
+    if (!respostaML.ok) throw new Error('Falha ao obter sugestão da API de ML.');
+
+    // A API de ML pode retornar 'NaN', que não é um JSON válido.
+    // Lemos como texto, substituímos 'NaN' por 'null' e então fazemos o parse.
+    const responseText = await respostaML.text();
+    const cleanedText = responseText.replace(/:NaN/g, ':null');
+    const dataML = JSON.parse(cleanedText);
+    const suggestedCost = dataML?.[0]?.custo_sugerido; // Pega o custo do primeiro resultado
+
+    if (suggestedCost === undefined || suggestedCost === null) throw new Error('Resposta da API de ML inválida.');
+
+    // 3. Confirmação do usuário antes de aplicar o custo
+    const custoUnitario = parseFloat(suggestedCost) / 100;
+    const confirmacao = confirm(`O custo sugerido é R$ ${custoUnitario.toFixed(2)}. Deseja aplicar este custo ao produto "${produtoData.produto}"?`);
+
+    if (!confirmacao) return; // Se o usuário cancelar, a função retorna sem fazer nada
+    
+    // 3. Calcular o custo unitário e atualizar o produto
+    const produtoAtualizado = { ...produtoData, custoUnitario: custoUnitario };
+    const respostaUpdate = await apiFetch(`/produtos/${produtoId}`, { method: 'PUT', body: JSON.stringify(produtoAtualizado) });
+
+
+    if (!respostaUpdate.ok) throw new Error('Falha ao atualizar o custo do produto.');
+
+    alert(`Custo do produto "${produtoData.produto}" atualizado para R$ ${custoUnitario.toFixed(2)}.`);
+    tableRow.data(produtoAtualizado).draw(false); // Atualiza a linha na tabela sem recarregar a página
+
+  } catch (erro) {
+    console.error('Erro no processo de sugestão e atualização de custo:', erro);
+    alert(`Erro: ${erro.message}`);
+  } finally {
+    button.disabled = false;
+    loader.classList.add('hidden');
+  }
+}
+
 async function carregarVendas() {
   const tabelaPedidos = $('#tabela-pedidos');
   const loader = $('#loader-overlay');
@@ -461,9 +555,9 @@ async function carregarVendas() {
         { data: 'cliente.nomeCliente' },
         { data: 'produto.produto' },
         { data: 'quantidade' },
-        { data: 'precoUnitario', render: (data) => data.toFixed(2) },
+        { data: 'precoUnitario', render: (data) => `R$ ${data.toFixed(2)}` },
         { data: 'formaPagamento.formaPagamento' },
-        { data: 'receitaTotal', render: (data) => data.toFixed(2) },
+        { data: 'receitaTotal', render: (data) => `R$ ${data.toFixed(2)}` },
         {
           data: 'id',
           render: function (data, type, row) {
@@ -542,7 +636,21 @@ async function apiFetch(endpoint, options = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  return fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+
+  // Verifica se a resposta é um erro de "Não Autorizado" (401)
+  if (response.status === 401) {
+    // Limpa o token de autenticação do localStorage, pois é inválido ou expirado.
+    localStorage.removeItem('authToken');
+    // Redireciona o usuário para a página de login.
+    window.location.href = 'login.html';
+
+    // Retorna uma promessa que nunca será resolvida para interromper a execução
+    // do código que chamou a apiFetch, evitando erros no console.
+    return new Promise(() => {});
+  }
+
+  return response;
 }
 
 async function carregarEstoque() {
@@ -566,22 +674,33 @@ async function carregarEstoque() {
       columns: [
         { data: 'produto' },
         { data: 'categoria' },
-        { data: 'custoUnitario', render: (data) => data ? data.toFixed(2) : 'N/A' },
-        { data: 'precoSugerido', render: (data) => data ? data.toFixed(2) : 'N/A' },
-        { data: 'pedidoMinimo', render: (data) => data || 'N/A' },
-        { data: 'centoPreco', render: (data) => data ? data.toFixed(2) : 'N/A' },
-        {
-          data: 'id',
-          render: function (data, type, row) {
-            return `<a href="cadastro_produto.html?id=${data}" class="btn-acao">Editar</a>`;
+        { 
+          data: 'custoUnitario',
+          render: function(data, type, row) {
+            // Se o custo não existir (null, undefined, 0), e houver um preço sugerido, mostra o botão.
+            if (!data && row.precoSugerido) {              
+              return `<button class="btn-acao btn-sugerir-custo-tabela" data-product-id="${row.id}">Sugerir Custo (IA)</button>`;
+            }
+            // Caso contrário, mostra o custo formatado ou 'N/A'.
+            return data ? `R$ ${data.toFixed(2)}` : 'N/A';
           }
-        }
+        },
+        { data: 'precoSugerido', render: (data) => data ? `R$ ${data.toFixed(2)}` : 'N/A' },
+        { data: 'pedidoMinimo', render: (data) => data || 'N/A' },
+        { data: 'centoPreco', render: (data) => data ? `R$ ${data.toFixed(2)}` : 'N/A' },
+        {
+           data: 'id',
+           orderable: false,
+           render: function (data, type, row) {
+             return `<a href="cadastro_produto.html?id=${data}" class="btn-acao">Editar</a>`;
+           }
+         }
       ],
       destroy: true,
       language: ptBR
     });
   } catch (erro) {
-    tabelaEstoque.find('tbody').html('<tr><td colspan="6">Erro ao carregar produtos do estoque.</td></tr>');
+    tabelaEstoque.find('tbody').html('<tr><td colspan="7">Erro ao carregar produtos do estoque.</td></tr>');
     console.error('Erro ao carregar estoque:', erro);
   } finally {
     loader.addClass('hidden');
@@ -605,7 +724,7 @@ async function carregarFinanceiro() {
     const resumo = await resposta.json();
 
     resumoDiv.innerHTML = `
-      <p><strong>Receita Total:</strong> R$ ${resumo.receitaTotal.toFixed(2)}</p>
+      <p><strong>Receita Total:</strong> R$ ${resumo.receitaTotal.toFixed(2).replace('.', ',')}</p>
       <p><strong>Total de Vendas:</strong> ${resumo.totalVendas}</p>
     `;
   } catch (erro) {
@@ -639,7 +758,7 @@ async function carregarRelatorios() {
         { data: 'idVenda' },
         { data: 'cliente.nomeCliente' },
         { data: 'produto.produto' },
-        { data: 'receitaTotal', render: (data) => data.toFixed(2) }
+        { data: 'receitaTotal', render: (data) => `R$ ${data.toFixed(2)}` }
       ],
       destroy: true,
       language: ptBR

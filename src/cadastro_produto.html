@@ -13,12 +13,18 @@
       </div>
       <h1 id="titulo-formulario">Cadastro de Produto</h1>
       <form id="form-produto">
-        <input type="text" id="produto" name="produto" placeholder="Nome do produto (ex: Coxinha)" required>
-        <input type="text" id="categoria" name="categoria" placeholder="Categoria (ex: Salgado)" required>
-        <input type="number" id="custoUnitario" step="0.01" name="custoUnitario" placeholder="Custo Unitário (R$)" required>
-        <input type="number" id="precoSugerido" step="0.01" name="precoSugerido" placeholder="Preço Sugerido (R$)">
-        <input type="number" id="pedidoMinimo" name="pedidoMinimo" placeholder="Pedido Mínimo (unidades)">
-        <input type="number" id="centoPreco" step="0.01" name="centoPreco" placeholder="Preço do Cento (R$)">
+        <label for="produto">Nome do produto</label>
+        <input type="text" id="produto" name="produto" placeholder="ex: Coxinha" required>
+        <label for="categoria">Categoria</label>
+        <input type="text" id="categoria" name="categoria" placeholder="ex: Salgado" required>
+        <label for="custoUnitario">Custo Unitário (R$)</label>
+        <input type="number" id="custoUnitario" step="0.01" name="custoUnitario">
+        <label for="precoSugerido">Preço de Venda (R$)</label>
+        <input type="number" id="precoSugerido" step="0.01" name="precoSugerido" placeholder="Preço de Venda (R$)">
+        <label for="pedidoMinimo">Pedido Mínimo (unidades)</label>
+        <input type="number" id="pedidoMinimo" name="pedidoMinimo">
+        <label for="centoPreco">Preço do Cento (R$)</label>
+        <input type="number" id="centoPreco" step="0.01" name="centoPreco">
         <button type="submit" id="btn-salvar">Salvar Produto</button>
       </form>
     </div>

@@ -132,23 +132,11 @@ h1, h2 {
   margin-bottom: 20px;
 }
 
-/* Estilos de Formulário */
-.form-box {
-  background-color: rgba(255, 255, 255, 0.95);
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  width: 350px;
-}
-
-.form-box label,
 label {
   display: block;
   margin-bottom: 5px;
 }
 
-.form-box input,
-.form-box textarea,
 input[type="text"],
 input[type="number"],
 input[type="date"],
@@ -164,7 +152,6 @@ select {
   box-sizing: border-box;
 }
 
-.form-box button,
 button[type="submit"] {
   width: 100%;
   padding: 12px;
@@ -176,7 +163,6 @@ button[type="submit"] {
   background-color: #007bff;
 }
 
-.form-box button:hover,
 button[type="submit"]:hover {
   background-color: #0056b3;
 }
