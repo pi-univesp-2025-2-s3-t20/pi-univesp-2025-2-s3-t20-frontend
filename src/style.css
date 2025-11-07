@@ -25,6 +25,7 @@ body::before {
 /* Reset básico para todos os elementos */
 * {
   box-sizing: border-box;
+  font-family: sans-serif;
 }
 /* Utilitários */
 .hidden {

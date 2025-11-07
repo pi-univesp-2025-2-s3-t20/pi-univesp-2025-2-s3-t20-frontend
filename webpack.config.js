@@ -2,7 +2,6 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const CopyPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
@@ -10,6 +9,7 @@ module.exports = (env, argv) => {
   return {
     entry: {
       main: './src/script.js',
+      relatorio: './src/relatorio.js'
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -20,6 +20,10 @@ module.exports = (env, argv) => {
     cache: false, // Desabilita o cache para forçar a releitura dos arquivos
     optimization: {
       minimize: false,
+      splitChunks: {
+        chunks: 'all',
+      },
+      runtimeChunk: 'single'
     },
     devServer: {
       static: './dist',
@@ -27,9 +31,6 @@ module.exports = (env, argv) => {
       historyApiFallback: true, // Habilita o fallback para todas as rotas
     },
     plugins: [
-      new MiniCssExtractPlugin({
-        filename: 'css/[name].[contenthash].css',
-      }),
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'index.html'),
         filename: 'index.html',
@@ -128,7 +129,7 @@ module.exports = (env, argv) => {
           removeRedundantAttributes: false,
         },
         publicPath: '/',
-        chunks: ['main'],
+        chunks: ['main', 'relatorio'],
       }),
       new Dotenv({
         // Carrega .env.production apenas em desenvolvimento local
@@ -150,10 +151,11 @@ module.exports = (env, argv) => {
       rules: [
         {
           test: /\.css$/i,
-          use: [MiniCssExtractPlugin.loader, 'css-loader'],
+          use: ['style-loader', 'css-loader'],
         },
       ],
     },
     mode: isProduction ? 'production' : 'development',
+
   };
 };

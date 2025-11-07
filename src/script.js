@@ -69,8 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarFinanceiro();
   } else if (path.includes('/pedidos')) {
     carregarVendas();
-  } else if (path.includes('/relatorios')) {
-    carregarRelatorios();
   }
 
   if (isAuthenticated && !isLoginPage) {
@@ -732,41 +730,5 @@ async function carregarFinanceiro() {
     console.error('Erro ao carregar financeiro:', erro);
   } finally {
     loader.addClass('hidden');
-  }
-}
-
-async function carregarRelatorios() {
-  const tabelaRelatorios = $('#tabela-relatorios');
-  const loader = $('#loader-overlay');
-  if (!tabelaRelatorios.length || !loader.length) {
-    if(loader.length) loader.addClass('hidden');
-    return;
-  }
-  loader.removeClass('hidden'); // Show the loader
-
-  try {
-    const resposta = await apiFetch('/vendas');
-    if (!resposta.ok) {
-      throw new Error('Falha ao carregar relatórios');
-    }
-    const vendas = await resposta.json();
-
-    tabelaRelatorios.DataTable({
-      data: vendas,
-      columns: [
-        { data: 'data', render: (data) => new Date(data).toLocaleDateString() },
-        { data: 'idVenda' },
-        { data: 'cliente.nomeCliente' },
-        { data: 'produto.produto' },
-        { data: 'receitaTotal', render: (data) => `R$ ${data.toFixed(2)}` }
-      ],
-      destroy: true,
-      language: ptBR
-    });
-  } catch (erro) {
-    tabelaRelatorios.find('tbody').html('<tr><td colspan="5">Erro ao carregar relatórios.</td></tr>');
-    console.error('Erro ao carregar relatórios:', erro);
-  } finally {
-    loader.addClass('hidden'); // Hide the loader
   }
 }
