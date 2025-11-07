@@ -1,33 +1,77 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <title>Relatórios</title>
 </head>
-<body>
-  <div class="container">
-    <div class="botoes-topo">
-      <a href="index.html" class="voltar">Voltar</a>
-    </div>
-    <h1>Relatórios de Vendas</h1>
-    <table id="tabela-relatorios" class="display" style="width:100%">
-      <thead>
-          <tr>
-              <th>Data</th>
-              <th>ID Venda</th>
-              <th>Cliente</th>
-              <th>Produto</th>
-              <th>Total (R$)</th>
-          </tr>
-      </thead>
-      <tbody>
-          <!-- Os dados serão carregados aqui pelo JavaScript -->
-      </tbody>
-    </table>
-  </div>
 
-  <div id="loader-overlay" class="loader-overlay hidden">
-    <div class="loader"></div>
-  </div>
+<body>
+
+  <main class="relatorio-container">
+
+    <header class="route-buttons">
+      <a href="index.html" class="button-back">Voltar</a>
+      <a href="https://app.powerbi.com/links/Gb7Y7ixkm7?ctid=dee74457-d751-4011-a5c4-44560cf8b415&pbi_source=linkShare"
+        target="_blank" class="button-powerbi">Power BI Dashboard</a>
+    </header>
+
+    <section class="vendas-relatorio">
+
+      <h1>Relatório de Vendas:</h1>
+
+      <div class="info-numerico">
+
+        <div class="info-component">
+          <strong>Unidades:</strong><p class="unidades-info"></p>
+        </div>
+        <div class="info-component">
+          <strong>Valor Total:</strong><p class="vendas-info"></p>
+        </div>
+
+      </div>
+
+      <div class="graficos-vendas">
+
+        <canvas id="grafico-produtos"></canvas>
+
+        <canvas id="grafico-vendas-mes"></canvas>
+
+      </div>
+    </section>
+
+    <section class="clientes-relatorio">
+
+      <h1>Relatório de Clientes:</h1>
+
+      <div>
+
+        <canvas id="grafico-clientes-rank"></canvas>
+        <table id="tabela-cliente-mes">
+          <thead>
+            <td>Cliente</td>
+            <td>Cidade</td>
+            <td>Quantidade</td>
+            <td>Total(R$)</td>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+      </div>
+    </section>
+
+    <section class="pagamento-relatorio">
+      <h1>Relatorio de Meio de Pagamento</h1>
+      <div>
+        <canvas id="grafico-pagamento"></canvas>
+        <canvas id="grafico-pagamento-unidades"></canvas>
+      </div>
+    </section>
+
+  </main>
+
+  
+
 </body>
+
 </html>

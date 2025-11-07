@@ -1,0 +1,192 @@
+main.relatorio-container {
+    width: calc(100vw - 2rem);
+    height: fit-content;
+    box-sizing: border-box;
+    padding: 0 0 3rem 0;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+}
+
+main.relatorio-container section {
+    width: 90%;
+    height: 90vh;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+main.relatorio-container header.route-buttons {
+
+    width: 90%;
+    height: 3.5rem;
+    background: white;
+    border-radius: 8px;
+    margin: 1rem 0;
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+    padding: 0 2rem;
+}
+
+main.relatorio-container canvas {
+    width: 42% !important;
+    min-width: 0;
+    max-width: 50%;
+    height: 50% !important;
+    min-height: 0;
+    max-height: 50%;
+}
+
+main.relatorio-container .vendas-relatorio,
+main.relatorio-container .pagamento-relatorio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+main.relatorio-container .clientes-relatorio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+main.relatorio-container .vendas-relatorio .graficos-vendas {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    flex-grow: 4;
+}
+
+main.relatorio-container .vendas-relatorio .info-numerico {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 2rem;
+}
+
+.info-numerico .info-component {
+
+    width: 20%;
+    height: 3rem;
+
+    display: flex;
+    align-items: center;
+
+    justify-content: center;
+    padding: 0 1rem;
+
+    box-sizing: border-box;
+    box-shadow: 0 0 0.5rem rgba( 0, 0, 0, 0.4);
+
+    border-radius: 8px; user-select: none;
+}
+
+main.relatorio-container .clientes-relatorio div,
+main.relatorio-container .pagamento-relatorio div {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 95%;
+    height: 95%;
+}
+
+.dataTables_paginate {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    float: none;
+    text-align: center;
+
+}
+
+/* botões da paginação */
+.dataTables_paginate .paginate_button {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    margin: 0 3px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.dataTables_paginate .paginate_button:hover {
+    background: #e0e0e0;
+    border-color: #888;
+}
+
+/* botão ativo */
+.dataTables_paginate .paginate_button.current {
+    background: #4CAF50;
+    /* cor do botão selecionado */
+    color: #fff !important;
+    border-color: #4CAF50;
+}
+
+.dataTables_paginate .paginate_button.disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+#tabela-cliente-mes_wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    font-size: 3.2rem;
+    color: #fab002;
+}
+
+.button-powerbi {
+    width: fit-content;
+    box-sizing: border-box;
+
+    padding: 1rem;
+    height: 3rem;
+
+    text-align: center;
+    line-height: 1rem;
+
+    text-decoration: none;
+    color: black;
+}
+
+.button-powerbi:hover {
+
+    color: #007bff;
+    transition: 0.3s;
+    transform: scale(1.1);
+}
+
+.button-back {
+
+    width: fit-content;
+    box-sizing: border-box;
+
+    padding: 1rem;
+    height: 3rem;
+
+    text-align: center;
+    line-height: 1rem;
+
+    text-decoration: none;
+    color: black;
+}
+
+.button-back:hover {
+
+    color: rgb(50 50 50);
+    transition: 0.3s;
+    transform: scale(1.1);
+}
